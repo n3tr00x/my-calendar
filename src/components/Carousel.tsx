@@ -68,7 +68,7 @@ export function Carousel({ children, intervalTime = 7000 }: CarouselProps) {
 						rounded="full"
 						w={2}
 						aspectRatio={1}
-						bgColor={currentIndex === index ? 'cyan.400' : 'gray.400'}
+						bgColor={currentIndex === index ? 'primary.500' : 'gray.400'}
 					></Box>
 				))}
 				<IconButton aria-label="next element" onClick={nextButtonHandler}>
