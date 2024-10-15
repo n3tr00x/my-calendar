@@ -8,11 +8,11 @@ import thirdSliderImage from '@/assets/slider/slider-3.jpg';
 import { Carousel } from '@/components/Carousel';
 
 export function AuthLayout() {
-	console.log('<SignUpPage /> render.');
+	console.log('<AuthLayout /> render.');
 
 	return (
 		<Container maxW="container.lg" minH="100vh" centerContent justifyContent="center">
-			<HStack w="100%" p={6} h="inherit" shadow="lg" gap={8} minH="536px">
+			<HStack w="100%" p={6} h="inherit" shadow="xl" gap={8} minH="536px">
 				<Box
 					w="50%"
 					bg="gray.100"
@@ -32,14 +32,20 @@ export function AuthLayout() {
 							</Box>
 							<Box p={4}>
 								<Heading fontWeight={500} textAlign="center" my={2}>
-									<Highlight query="on track!" styles={{ color: 'cyan.400', fontWeight: 600 }}>
+									<Highlight query="on track!" styles={{ color: 'primary.500', fontWeight: 600 }}>
 										Stay On Track!
 									</Highlight>
 								</Heading>
 								<Text lineHeight="taller" fontSize="xl">
 									<Highlight
 										query={['Stay organized', 'easy-to-use']}
-										styles={{ px: '2', py: '1', rounded: 'full', bg: 'cyan.400', color: 'white' }}
+										styles={{
+											px: '2',
+											py: '1',
+											rounded: 'full',
+											bg: 'primary.500',
+											color: 'white',
+										}}
 									>
 										Stay organized and never miss an event with our easy-to-use calendar.
 									</Highlight>
@@ -56,14 +62,20 @@ export function AuthLayout() {
 							</Box>
 							<Box p={4}>
 								<Heading fontWeight={500} textAlign="center" my={2}>
-									<Highlight query="balance" styles={{ color: 'cyan.400', fontWeight: 600 }}>
+									<Highlight query="balance" styles={{ color: 'primary.500', fontWeight: 600 }}>
 										Balance Life!
 									</Highlight>
 								</Heading>
 								<Text lineHeight="taller" fontSize="xl">
 									<Highlight
 										query={['simple app', 'manage']}
-										styles={{ px: '2', py: '1', rounded: 'full', bg: 'cyan.400', color: 'white' }}
+										styles={{
+											px: '2',
+											py: '1',
+											rounded: 'full',
+											bg: 'primary.500',
+											color: 'white',
+										}}
 									>
 										Manage your work, personal life, and more in one simple app.
 									</Highlight>
@@ -80,14 +92,20 @@ export function AuthLayout() {
 							</Box>
 							<Box p={4}>
 								<Heading fontWeight={500} textAlign="center" my={2}>
-									<Highlight query="ease!" styles={{ color: 'cyan.400', fontWeight: 600 }}>
+									<Highlight query="ease!" styles={{ color: 'primary.500', fontWeight: 600 }}>
 										Plan with Ease!
 									</Highlight>
 								</Heading>
 								<Text lineHeight="taller" fontSize="xl">
 									<Highlight
 										query={['plan', 'a few taps.']}
-										styles={{ px: '2', py: '1', rounded: 'full', bg: 'cyan.400', color: 'white' }}
+										styles={{
+											px: '2',
+											py: '1',
+											rounded: 'full',
+											bg: 'primary.500',
+											color: 'white',
+										}}
 									>
 										Plan your day, week, or month with just a few taps.
 									</Highlight>
