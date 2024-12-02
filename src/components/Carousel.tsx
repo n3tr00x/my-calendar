@@ -9,7 +9,6 @@ type CarouselProps = {
 };
 
 export function Carousel({ children, intervalTime = 7000 }: CarouselProps) {
-	console.log('<Carousel /> render.');
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [direction, setDirection] = useState<'LEFT' | 'RIGHT'>('RIGHT');
 
