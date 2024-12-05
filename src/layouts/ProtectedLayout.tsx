@@ -1,14 +1,16 @@
 import { useEffect } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { Button } from '@chakra-ui/react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { useDisclosure } from '@chakra-ui/react';
 
-import { useSignOutAccount } from '@/hooks/appwrite';
+import { Sidebar } from '@/components/Sidebar';
+import { Topbar } from '@/components/Topbar';
 import { useAuth } from '@/hooks/useAuth';
 
 export function ProtectedLayout() {
 	console.log('<Protected Layout /> render');
-	const { isAuthenticated, removeAuthentication, isLoading } = useAuth();
-	const { mutateAsync: signOut } = useSignOutAccount();
+
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const { isAuthenticated, isLoading } = useAuth();
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -26,21 +28,10 @@ export function ProtectedLayout() {
 	}
 
 	return (
-		<section>
-			<nav>
-				<Link to="/">Home</Link>
-				<Link to="/settings">Settings</Link>
-			</nav>
-			<Button
-				onClick={async () => {
-					await signOut();
-					removeAuthentication();
-					navigate('/sign-in');
-				}}
-			>
-				log out
-			</Button>
+		<main>
+			<Sidebar isOpen={isOpen} onClose={onClose} />
+			<Topbar onOpen={onOpen} />
 			<Outlet />
-		</section>
+		</main>
 	);
 }
