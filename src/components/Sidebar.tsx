@@ -30,9 +30,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 	const navigate = useNavigate();
 
 	const signOutHandler = async () => {
-		await signOut();
-		removeAuthentication();
-		navigate('/sign-in');
+		const proceed = window.confirm('Are you sure you want to log out?');
+
+		if (proceed) {
+			await signOut();
+			removeAuthentication();
+			navigate('/sign-in');
+		}
 	};
 
 	return (

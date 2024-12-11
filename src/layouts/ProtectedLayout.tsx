@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { useDisclosure } from '@chakra-ui/react';
+import { Flex, useDisclosure } from '@chakra-ui/react';
 
 import { Sidebar } from '@/components/Sidebar';
 import { Topbar } from '@/components/Topbar';
@@ -28,10 +28,10 @@ export function ProtectedLayout() {
 	}
 
 	return (
-		<main>
+		<Flex as="main" h="100vh" direction="column">
 			<Sidebar isOpen={isOpen} onClose={onClose} />
 			<Topbar onOpen={onOpen} />
 			<Outlet />
-		</main>
+		</Flex>
 	);
 }

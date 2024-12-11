@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { AuthLayout } from '@/layouts/AuthLayout';
 import { ProtectedLayout } from '@/layouts/ProtectedLayout';
+import { Home } from '@/pages/Home';
 import { SignInPage } from '@/pages/SignIn';
 import { SignUpPage } from '@/pages/SignUp';
 
@@ -17,7 +18,7 @@ export default function App() {
 		{
 			element: <ProtectedLayout />,
 			children: [
-				{ path: '/', element: <h1>Hello!</h1> },
+				{ path: '/', element: <Home /> },
 				{ path: '/settings', element: <h1>Settings</h1> },
 			],
 		},
