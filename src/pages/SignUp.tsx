@@ -1,22 +1,20 @@
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { WarningIcon } from '@chakra-ui/icons';
 import {
 	Button,
-	FormControl,
-	FormErrorMessage,
-	FormLabel,
+	Fieldset,
 	Input,
 	Link as ChakraLink,
 	Spinner,
+	Stack,
 	Text,
-	useToast,
-	VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppwriteException } from 'appwrite';
 import { z } from 'zod';
 
+import { Field } from '@/components/ui/field';
+import { toaster } from '@/components/ui/toaster';
 import { useCreateUserAccount, useSignInAccount } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -43,16 +41,16 @@ const SignUpValidation = z
 
 export function SignUpPage() {
 	console.log('<SignUpPage /> render.');
-	const toast = useToast();
+
 	const navigate = useNavigate();
 	const { checkUserAuthStatus } = useAuth();
-	const { mutateAsync: createAccount, isPending: isCreateAccountPending } = useCreateUserAccount();
-	const { mutateAsync: signInAccount, isPending: isSignInPending } = useSignInAccount();
+	const { mutateAsync: createAccount } = useCreateUserAccount();
+	const { mutateAsync: signInAccount } = useSignInAccount();
 
 	const {
 		register,
 		handleSubmit,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 	} = useForm<z.infer<typeof SignUpValidation>>({
 		resolver: zodResolver(SignUpValidation),
 	});
@@ -61,29 +59,25 @@ export function SignUpPage() {
 		const newUser = await createAccount({ email, password, username });
 
 		if (newUser instanceof AppwriteException) {
-			toast({
+			return toaster.create({
 				title: 'Sign up problem!',
-				description: newUser.message,
-				position: 'top',
-				status: 'error',
-				duration: 7000,
-				isClosable: true,
+				type: 'error',
+				description: newUser?.message,
+				placement: 'bottom-end',
+				duration: 4000,
 			});
-			return;
 		}
 
 		const session = await signInAccount({ email, password });
 
 		if (session instanceof AppwriteException) {
-			toast({
-				title: 'Sign in problem!',
+			return toaster.create({
+				title: 'Sign up problem!',
+				type: 'error',
 				description: session?.message,
-				position: 'top',
-				status: 'error',
-				duration: 7000,
-				isClosable: true,
+				placement: 'bottom-end',
+				duration: 4000,
 			});
-			return;
 		}
 
 		await checkUserAuthStatus();
@@ -91,63 +85,62 @@ export function SignUpPage() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
-			<Text fontSize="3xl" fontWeight="semibold">
-				Get started
-			</Text>
-			<Text mb={10} fontWeight="light" color="gray.700">
-				Create your account now
-			</Text>
-			<VStack gap={4}>
-				<FormControl isRequired isInvalid={!!errors.username}>
-					<FormLabel>Username</FormLabel>
-					<Input {...register('username')} />
-					<FormErrorMessage>
-						<WarningIcon mr={1} />
-						{errors.username?.message}
-					</FormErrorMessage>
-				</FormControl>
-				<FormControl isRequired isInvalid={!!errors.email}>
-					<FormLabel>Email</FormLabel>
-					<Input {...register('email')} type="email" />
-					<FormErrorMessage>
-						<WarningIcon mr={1} />
-						{errors.email?.message}
-					</FormErrorMessage>
-				</FormControl>
-				<FormControl isRequired isInvalid={!!errors.password}>
-					<FormLabel>Password</FormLabel>
-					<Input {...register('password')} type="password" />
-					<FormErrorMessage>
-						<WarningIcon mr={1} />
-						{errors.password?.message}
-					</FormErrorMessage>
-				</FormControl>
-				<FormControl isRequired isInvalid={!!errors.confirmPassword}>
-					<FormLabel>Confirm password</FormLabel>
-					<Input {...register('confirmPassword')} type="password" />
-					<FormErrorMessage>
-						<WarningIcon mr={1} />
-						{errors.confirmPassword?.message}
-					</FormErrorMessage>
-				</FormControl>
-				<Button
-					type="submit"
-					disabled={isCreateAccountPending}
-					w="full"
-					colorScheme="primary"
-					color="neutral.100"
-					py={6}
-				>
-					{isCreateAccountPending || isSignInPending ? <Spinner color="white" /> : 'Sign up'}
-				</Button>
-			</VStack>
-			<Text mt={10} textAlign="center">
-				Have an account?{' '}
-				<ChakraLink color="primary.700">
-					<Link to="/sign-in">Login</Link>
-				</ChakraLink>
-			</Text>
-		</form>
+		<>
+			<Fieldset.Root>
+				<Stack gap={3} mb={4}>
+					<Fieldset.Legend fontSize="3xl" fontFamily="heading" fontWeight="semibold">
+						Get started
+					</Fieldset.Legend>
+					<Fieldset.HelperText fontSize="md" fontWeight="light" color="fg.subtle">
+						Create your account now
+					</Fieldset.HelperText>
+				</Stack>
+				<form onSubmit={handleSubmit(onSubmit)}>
+					<Fieldset.Content>
+						<Field
+							label="Email"
+							required
+							invalid={!!errors.email}
+							errorText={errors.email?.message}
+						>
+							<Input {...register('email')} type="email" />
+						</Field>
+						<Field
+							label="Username"
+							required
+							invalid={!!errors.username}
+							errorText={errors.username?.message}
+						>
+							<Input {...register('username')} type="email" />
+						</Field>
+						<Field
+							label="Password"
+							required
+							invalid={!!errors.password}
+							errorText={errors.password?.message}
+						>
+							<Input {...register('password')} type="password" />
+						</Field>
+						<Field
+							label="Confirm password"
+							required
+							invalid={!!errors.confirmPassword}
+							errorText={errors.confirmPassword?.message}
+						>
+							<Input {...register('confirmPassword')} type="password" />
+						</Field>
+						<Button type="submit" colorPalette="blue" py={6} disabled={isSubmitting} fontSize="md">
+							{isSubmitting ? <Spinner /> : 'Submit'}
+						</Button>
+					</Fieldset.Content>
+				</form>
+				<Text mt={5} textAlign="center">
+					Have an account?{' '}
+					<ChakraLink color="blue.solid">
+						<Link to="/sign-in">Login</Link>
+					</ChakraLink>
+				</Text>
+			</Fieldset.Root>
+		</>
 	);
 }

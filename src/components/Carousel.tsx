@@ -1,7 +1,9 @@
 import { ReactNode, useCallback, useEffect, useState } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { Box, Flex, IconButton } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
+
+import { ChevronLeftIcon } from '@/components/icons/ChevronLeftIcon';
+import { ChevronRightIcon } from '@/components/icons/ChevronRightIcon';
 
 type CarouselProps = {
 	children: ReactNode[];
@@ -58,8 +60,8 @@ export function Carousel({ children, intervalTime = 7000 }: CarouselProps) {
 				gap={2}
 				m={1}
 			>
-				<IconButton aria-label="previous element" onClick={previousButtonHandler}>
-					<ChevronLeftIcon />
+				<IconButton aria-label="previous element" onClick={previousButtonHandler} bg="transparent">
+					<ChevronLeftIcon color="bg.inverted" />
 				</IconButton>
 				{Array.from(children, (_, index) => (
 					<Box
@@ -67,11 +69,11 @@ export function Carousel({ children, intervalTime = 7000 }: CarouselProps) {
 						rounded="full"
 						w={2}
 						aspectRatio={1}
-						bgColor={currentIndex === index ? 'primary.500' : 'gray.400'}
+						bgColor={currentIndex === index ? 'blue.solid' : 'gray'}
 					></Box>
 				))}
-				<IconButton aria-label="next element" onClick={nextButtonHandler}>
-					<ChevronRightIcon />
+				<IconButton aria-label="next element" onClick={nextButtonHandler} bg="transparent">
+					<ChevronRightIcon color="bg.inverted" />
 				</IconButton>
 			</Flex>
 		</Box>

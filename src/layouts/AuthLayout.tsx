@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { Box, Container, Heading, Highlight, HStack, Text } from '@chakra-ui/react';
+import { Box, Container, Flex, Heading, Highlight, HStack, Text } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 
 import firstSliderImage from '@/assets/slider/slider-1.jpg';
@@ -20,7 +20,7 @@ const CAROUSEL_ITEMS = [
 		title: 'Balance Life!',
 		keywordTitle: 'balance',
 		description: 'Manage your work, personal life, and more in one simple app.',
-		keywords: ['simple app', 'manage'],
+		keywords: ['simple app.', 'manage'],
 	},
 	{
 		image: thirdSliderImage,
@@ -35,11 +35,10 @@ export function AuthLayout() {
 	console.log('<AuthLayout /> render');
 
 	return (
-		<Container maxW="container.lg" minH="100vh" centerContent justifyContent="center">
-			<HStack w="100%" p={6} h="inherit" shadow="xl" gap={8} minH="536px">
+		<Container maxW="5xl" minH="100vh" centerContent justifyContent="center">
+			<HStack w="100%" p={6} h="inherit" shadow="xl" gap={8} minH="524px">
 				<Box
 					w="50%"
-					bg="gray.100"
 					alignSelf="stretch"
 					rounded="lg"
 					overflow="hidden"
@@ -48,7 +47,7 @@ export function AuthLayout() {
 					<Carousel intervalTime={6000}>
 						{CAROUSEL_ITEMS.map((item, index) => (
 							<Box key={index} h="full">
-								<Box h="220px" overflow="hidden">
+								<Box h="268px" overflow="hidden">
 									<motion.img
 										src={item.image}
 										animate={{ scale: [1, 1.2, 1] }}
@@ -56,10 +55,10 @@ export function AuthLayout() {
 									/>
 								</Box>
 								<Box p={4}>
-									<Heading fontWeight={500} textAlign="center" my={2}>
+									<Heading fontWeight={700} textAlign="center" my={2} size="2xl">
 										<Highlight
 											query={item.keywordTitle}
-											styles={{ color: 'primary.500', fontWeight: 600 }}
+											styles={{ color: 'blue.solid', fontWeight: 600 }}
 										>
 											{item.title}
 										</Highlight>
@@ -68,10 +67,8 @@ export function AuthLayout() {
 										<Highlight
 											query={item.keywords}
 											styles={{
-												px: '2',
-												py: '1',
-												rounded: 'full',
-												bg: 'primary.500',
+												px: 2,
+												bg: 'blue.solid',
 												color: 'white',
 											}}
 										>
@@ -83,9 +80,9 @@ export function AuthLayout() {
 						))}
 					</Carousel>
 				</Box>
-				<Box w={{ base: 'full', md: '50%' }}>
+				<Flex w={{ base: 'full', md: '50%' }} minH="inherit" direction="column" justify="center">
 					<Outlet />
-				</Box>
+				</Flex>
 			</HStack>
 		</Container>
 	);

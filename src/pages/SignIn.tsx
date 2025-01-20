@@ -1,22 +1,20 @@
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { WarningIcon } from '@chakra-ui/icons';
 import {
 	Button,
-	FormControl,
-	FormErrorMessage,
-	FormLabel,
+	Fieldset,
 	Input,
 	Link as ChakraLink,
 	Spinner,
+	Stack,
 	Text,
-	useToast,
-	VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppwriteException } from 'appwrite';
 import { z } from 'zod';
 
+import { Field } from '@/components/ui/field';
+import { toaster } from '@/components/ui/toaster';
 import { useSignInAccount } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -30,7 +28,6 @@ export function SignInPage() {
 	const { mutateAsync: signInAccount } = useSignInAccount();
 	const { checkUserAuthStatus } = useAuth();
 	const navigate = useNavigate();
-	const toast = useToast();
 
 	const {
 		register,
@@ -44,15 +41,13 @@ export function SignInPage() {
 		const session = await signInAccount({ email, password });
 
 		if (session instanceof AppwriteException) {
-			toast({
+			return toaster.create({
 				title: 'Sign in problem!',
+				type: 'error',
 				description: session?.message,
-				position: 'top',
-				status: 'error',
-				duration: 7000,
-				isClosable: true,
+				placement: 'bottom-end',
+				duration: 4000,
 			});
-			return;
 		}
 
 		await checkUserAuthStatus();
@@ -60,47 +55,46 @@ export function SignInPage() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
-			<Text fontSize="3xl" fontWeight="semibold">
-				Start planning
-			</Text>
-			<Text mb={10} fontWeight="light" color="gray.700">
-				Log in to your account
-			</Text>
-			<VStack gap={4}>
-				<FormControl isRequired isInvalid={!!errors.email}>
-					<FormLabel>Email</FormLabel>
-					<Input {...register('email')} type="email" />
-					<FormErrorMessage>
-						<WarningIcon mr={1} />
-						{errors.email?.message}
-					</FormErrorMessage>
-				</FormControl>
-				<FormControl isRequired isInvalid={!!errors.password}>
-					<FormLabel>Password</FormLabel>
-					<Input {...register('password')} type="password" />
-					<FormErrorMessage>
-						<WarningIcon mr={1} />
-						{errors.password?.message}
-					</FormErrorMessage>
-				</FormControl>
-				<Button
-					type="submit"
-					disabled={isSubmitting}
-					w="full"
-					colorScheme="primary"
-					color="white"
-					py={6}
-				>
-					{isSubmitting ? <Spinner color="white" /> : 'Sign in'}
-				</Button>
-			</VStack>
-			<Text mt={10} textAlign="center">
-				Don't have an account?{' '}
-				<ChakraLink color="primary.700">
-					<Link to="/sign-up">Register</Link>
-				</ChakraLink>
-			</Text>
-		</form>
+		<>
+			<Fieldset.Root>
+				<Stack gap={3} mb={4}>
+					<Fieldset.Legend fontSize="3xl" fontFamily="heading" fontWeight="semibold">
+						Start planning
+					</Fieldset.Legend>
+					<Fieldset.HelperText fontSize="md" fontWeight="light" color="fg.subtle">
+						Log in to your account
+					</Fieldset.HelperText>
+				</Stack>
+				<form onSubmit={handleSubmit(onSubmit)}>
+					<Fieldset.Content>
+						<Field
+							label="Email"
+							required
+							invalid={!!errors.email}
+							errorText={errors.email?.message}
+						>
+							<Input {...register('email')} type="email" />
+						</Field>
+						<Field
+							label="Password"
+							required
+							invalid={!!errors.password}
+							errorText={errors.password?.message}
+						>
+							<Input {...register('password')} type="password" />
+						</Field>
+						<Button type="submit" colorPalette="blue" py={6} disabled={isSubmitting} fontSize="md">
+							{isSubmitting ? <Spinner /> : 'Submit'}
+						</Button>
+					</Fieldset.Content>
+				</form>
+				<Text mt={5} textAlign="center">
+					Don't have an account?{' '}
+					<ChakraLink color="blue.solid">
+						<Link to="/sign-up">Register</Link>
+					</ChakraLink>
+				</Text>
+			</Fieldset.Root>
+		</>
 	);
 }
