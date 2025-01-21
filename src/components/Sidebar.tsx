@@ -1,21 +1,19 @@
 import { useNavigate } from 'react-router-dom';
+import { Box, Flex, Input, Text } from '@chakra-ui/react';
+import { LogOut } from 'lucide-react';
+
+import { Avatar } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { ColorModeButton } from '@/components/ui/color-mode';
 import {
-	Avatar,
-	Box,
-	Button,
-	Drawer,
+	DrawerBackdrop,
 	DrawerBody,
-	DrawerCloseButton,
+	DrawerCloseTrigger,
 	DrawerContent,
 	DrawerFooter,
 	DrawerHeader,
-	DrawerOverlay,
-	Flex,
-	Input,
-	Text,
-} from '@chakra-ui/react';
-
-import { LogoutIcon } from '@/components/icons/Logout';
+	DrawerRoot,
+} from '@/components/ui/drawer';
 import { useSignOutAccount } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -35,15 +33,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 		if (proceed) {
 			await signOut();
 			removeAuthentication();
-			navigate('/sign-in');
+			navigate('/sign-in', { replace: true });
 		}
 	};
 
 	return (
-		<Drawer placement="left" isOpen={isOpen} onClose={onClose}>
-			<DrawerOverlay />
+		<DrawerRoot open={isOpen} onOpenChange={onClose} placement="start">
+			<DrawerBackdrop />
 			<DrawerContent>
-				<DrawerCloseButton />
+				<DrawerCloseTrigger />
 				<DrawerHeader>My Calendar</DrawerHeader>
 				<DrawerBody>
 					<Input placeholder="Type here..." />
@@ -51,17 +49,20 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 				<DrawerFooter justifyContent="space-between">
 					<Box p={1}>
 						<Flex>
-							<Avatar src="https://bit.ly/tioluwani-kolawole" size="sm" />
+							<Avatar name={user?.name} />
 							<Text alignSelf="center" ml="8px">
 								{user?.name}
 							</Text>
 						</Flex>
 					</Box>
-					<Button variant="ghost" onClick={signOutHandler}>
-						<LogoutIcon fill="neutral.500" />
-					</Button>
+					<Box>
+						<ColorModeButton px={4} minH={10} />
+						<Button variant="ghost" onClick={signOutHandler}>
+							<LogOut />
+						</Button>
+					</Box>
 				</DrawerFooter>
 			</DrawerContent>
-		</Drawer>
+		</DrawerRoot>
 	);
 }

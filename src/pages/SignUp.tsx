@@ -111,7 +111,7 @@ export function SignUpPage() {
 							invalid={!!errors.username}
 							errorText={errors.username?.message}
 						>
-							<Input {...register('username')} type="email" />
+							<Input {...register('username')} type="text" />
 						</Field>
 						<Field
 							label="Password"

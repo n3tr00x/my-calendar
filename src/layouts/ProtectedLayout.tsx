@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 export function ProtectedLayout() {
 	console.log('<Protected Layout /> render');
 
-	const { isOpen, onOpen, onClose } = useDisclosure();
+	const { open, onOpen, onClose } = useDisclosure();
 	const { isAuthenticated, isLoading } = useAuth();
 	const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ export function ProtectedLayout() {
 
 	return (
 		<Flex as="main" h="100vh" direction="column">
-			<Sidebar isOpen={isOpen} onClose={onClose} />
+			<Sidebar isOpen={open} onClose={onClose} />
 			<Topbar onOpen={onOpen} />
 			<Outlet />
 		</Flex>

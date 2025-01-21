@@ -1,5 +1,7 @@
-import { HamburgerIcon, SearchIcon } from '@chakra-ui/icons';
-import { Button, List, ListItem } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
+import { Menu, Search } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 
 type TopbarProps = {
 	onOpen: () => void;
@@ -7,19 +9,21 @@ type TopbarProps = {
 
 export function Topbar({ onOpen }: TopbarProps) {
 	return (
-		<nav>
-			<List display="flex">
-				<ListItem>
-					<Button variant="ghost" onClick={onOpen}>
-						<HamburgerIcon />
-					</Button>
-				</ListItem>
-				<ListItem ml="auto">
-					<Button variant="ghost">
-						<SearchIcon />
-					</Button>
-				</ListItem>
-			</List>
-		</nav>
+		<header>
+			<nav>
+				<Box as="ul" listStyle="none" display="flex">
+					<li>
+						<Button variant="ghost" onClick={onOpen}>
+							<Menu />
+						</Button>
+					</li>
+					<li style={{ marginLeft: 'auto' }}>
+						<Button variant="ghost">
+							<Search />
+						</Button>
+					</li>
+				</Box>
+			</nav>
+		</header>
 	);
 }
