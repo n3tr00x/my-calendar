@@ -1,15 +1,14 @@
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Flex, useDisclosure } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 
-import { Sidebar } from '@/components/Sidebar';
 import { Topbar } from '@/components/Topbar';
+import { DateContextProvider } from '@/contexts/DateContext';
 import { useAuth } from '@/hooks/useAuth';
 
 export function ProtectedLayout() {
 	console.log('<Protected Layout /> render');
 
-	const { open, onOpen, onClose } = useDisclosure();
 	const { isAuthenticated, isLoading } = useAuth();
 	const navigate = useNavigate();
 
@@ -28,10 +27,11 @@ export function ProtectedLayout() {
 	}
 
 	return (
-		<Flex as="main" h="100vh" direction="column">
-			<Sidebar isOpen={open} onClose={onClose} />
-			<Topbar onOpen={onOpen} />
-			<Outlet />
-		</Flex>
+		<DateContextProvider>
+			<Flex h="100vh" direction="column">
+				<Topbar />
+				<Outlet />
+			</Flex>
+		</DateContextProvider>
 	);
 }

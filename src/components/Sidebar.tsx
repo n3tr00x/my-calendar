@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Box, Flex, Input, Text } from '@chakra-ui/react';
-import { LogOut } from 'lucide-react';
+import { Box, Flex, Text } from '@chakra-ui/react';
+import { LogOut, Menu } from 'lucide-react';
 
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -13,16 +13,14 @@ import {
 	DrawerFooter,
 	DrawerHeader,
 	DrawerRoot,
+	DrawerTrigger,
 } from '@/components/ui/drawer';
 import { useSignOutAccount } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 
-type SidebarProps = {
-	isOpen: boolean;
-	onClose: () => void;
-};
+import { NewEventModal } from './NewEvent';
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+export function Sidebar() {
 	const { user, removeAuthentication } = useAuth();
 	const { mutateAsync: signOut } = useSignOutAccount();
 	const navigate = useNavigate();
@@ -38,13 +36,18 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 	};
 
 	return (
-		<DrawerRoot open={isOpen} onOpenChange={onClose} placement="start">
+		<DrawerRoot placement="start">
 			<DrawerBackdrop />
+			<DrawerTrigger asChild>
+				<Button variant="ghost">
+					<Menu />
+				</Button>
+			</DrawerTrigger>
 			<DrawerContent>
 				<DrawerCloseTrigger />
 				<DrawerHeader>My Calendar</DrawerHeader>
 				<DrawerBody>
-					<Input placeholder="Type here..." />
+					<NewEventModal />
 				</DrawerBody>
 				<DrawerFooter justifyContent="space-between">
 					<Box p={1}>

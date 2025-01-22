@@ -1,21 +1,20 @@
 import { Box } from '@chakra-ui/react';
-import { Menu, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 
+import { MonthNavigator } from '@/components/MonthNavigator';
+import { Sidebar } from '@/components/Sidebar';
 import { Button } from '@/components/ui/button';
 
-type TopbarProps = {
-	onOpen: () => void;
-};
-
-export function Topbar({ onOpen }: TopbarProps) {
+export function Topbar() {
 	return (
-		<header>
+		<Box as="header" py={4}>
 			<nav>
 				<Box as="ul" listStyle="none" display="flex">
 					<li>
-						<Button variant="ghost" onClick={onOpen}>
-							<Menu />
-						</Button>
+						<Sidebar />
+					</li>
+					<li>
+						<MonthNavigator />
 					</li>
 					<li style={{ marginLeft: 'auto' }}>
 						<Button variant="ghost">
@@ -24,6 +23,6 @@ export function Topbar({ onOpen }: TopbarProps) {
 					</li>
 				</Box>
 			</nav>
-		</header>
+		</Box>
 	);
 }
