@@ -2,13 +2,14 @@ import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 import { AppwriteException } from 'appwrite';
 
 import { MainLoader } from '@/components/MainLoader';
+import { toaster } from '@/components/ui/toaster';
 import { getCurrentUser } from '@/lib/appwrite/auth';
 import { IUser } from '@/types/appwrite';
 
 type IAuthContext = {
 	isAuthenticated: boolean;
 	isLoading: boolean;
-	checkUserAuthStatus: () => Promise<void>;
+	checkUserAuthStatus: () => Promise<string | undefined>;
 	removeAuthentication: () => void;
 	user: IUser | null;
 };
@@ -16,7 +17,7 @@ type IAuthContext = {
 const INITIAL_AUTH_CONTEXT_STATE = {
 	isAuthenticated: false,
 	isLoading: false,
-	checkUserAuthStatus: async () => {},
+	checkUserAuthStatus: async () => '',
 	removeAuthentication: () => {},
 	user: null,
 };
@@ -36,10 +37,21 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		try {
 			const currentAccount = (await getCurrentUser()) as IUser;
 
-			if (!(currentAccount instanceof AppwriteException)) {
-				setIsAuthenticated(true);
-				setUser(currentAccount);
+			if (
+				currentAccount instanceof AppwriteException &&
+				window.location.pathname !== '/sign-in' &&
+				window.location.pathname !== '/sign-up'
+			) {
+				const code = currentAccount.code;
+				return toaster.create({
+					title: `Account unauthorized. Please try to sign in again. Code ${code}`,
+					type: 'error',
+					duration: 4000,
+				});
 			}
+
+			setIsAuthenticated(true);
+			setUser(currentAccount);
 		} catch (error) {
 			setIsAuthenticated(false);
 			console.error(error);
