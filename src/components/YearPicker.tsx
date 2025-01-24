@@ -17,8 +17,6 @@ import { useDate } from '@/hooks/useDate';
 type YearPickerModalProps = {
 	isOpen: boolean;
 	onClose: () => void;
-	// currentDate: Date;
-	// onDateChange: Dispatch<SetStateAction<Date>>;
 };
 
 const MONTHS = [
@@ -41,11 +39,11 @@ const generateTwelveYears = (date: Date) => {
 };
 
 export function YearPickerModal({ isOpen, onClose }: YearPickerModalProps) {
-	console.log('<YearPickerModal />');
+	console.log('<YearPickerModal /> render.');
 
-	const { date: currentDate } = useDate();
+	const { date: currentSelectedDate } = useDate();
 	const [mode, setMode] = useState<'month' | 'year'>('month');
-	const [date, setDate] = useState(currentDate);
+	const [date, setDate] = useState(currentSelectedDate);
 	const years = generateTwelveYears(date);
 
 	const setPreviousYear = () => {
@@ -70,7 +68,7 @@ export function YearPickerModal({ isOpen, onClose }: YearPickerModalProps) {
 
 	const closePickerModal = () => {
 		setMode('month');
-		setDate(currentDate);
+		setDate(currentSelectedDate);
 		onClose();
 	};
 
@@ -93,9 +91,7 @@ export function YearPickerModal({ isOpen, onClose }: YearPickerModalProps) {
 						fontFamily="heading"
 						onClick={() => setMode(mode === 'month' ? 'year' : 'month')}
 					>
-						{mode === 'month'
-							? currentDate.getFullYear()
-							: `${years[0]}-${years[years.length - 1]}`}
+						{mode === 'month' ? date.getFullYear() : `${years[0]}-${years[years.length - 1]}`}
 					</Button>
 					<Button variant="ghost" onClick={setNextYear}>
 						<ChevronRight />
@@ -103,7 +99,14 @@ export function YearPickerModal({ isOpen, onClose }: YearPickerModalProps) {
 				</DialogHeader>
 				<DialogCloseTrigger />
 				<DialogBody>
-					<MonthPicker mode={mode} years={years} onSetMode={setMode} onClose={onClose} />
+					<MonthPicker
+						mode={mode}
+						date={date}
+						years={years}
+						onSetMode={setMode}
+						onSetDate={setDate}
+						onClose={onClose}
+					/>
 				</DialogBody>
 			</DialogContent>
 		</DialogRoot>
@@ -113,12 +116,14 @@ export function YearPickerModal({ isOpen, onClose }: YearPickerModalProps) {
 type MonthPickerProps = {
 	mode: 'month' | 'year';
 	years: number[];
+	date: Date;
 	onSetMode: Dispatch<SetStateAction<'month' | 'year'>>;
+	onSetDate: Dispatch<SetStateAction<Date>>;
 	onClose: () => void;
 };
 
-function MonthPicker({ mode, years, onSetMode, onClose }: MonthPickerProps) {
-	const { date, onDateChange } = useDate();
+function MonthPicker({ mode, years, date, onSetMode, onSetDate, onClose }: MonthPickerProps) {
+	const { date: selectedDate, onDateChange } = useDate();
 
 	const setMonthHandler = (index: number) => {
 		onDateChange(setMonth(date, index));
@@ -132,7 +137,12 @@ function MonthPicker({ mode, years, onSetMode, onClose }: MonthPickerProps) {
 						<GridItem key={month}>
 							<Button
 								variant="subtle"
-								colorPalette={date.getMonth() === index ? 'blue' : undefined}
+								colorPalette={
+									selectedDate.getMonth() === index &&
+									selectedDate.getFullYear() === date.getFullYear()
+										? 'blue'
+										: undefined
+								}
 								minW={20}
 								onClick={() => setMonthHandler(index)}
 							>
@@ -144,10 +154,10 @@ function MonthPicker({ mode, years, onSetMode, onClose }: MonthPickerProps) {
 						<GridItem key={year}>
 							<Button
 								variant="subtle"
-								colorPalette={date.getFullYear() === year ? 'blue' : undefined}
+								colorPalette={selectedDate.getFullYear() === year ? 'blue' : undefined}
 								minW={20}
 								onClick={() => {
-									onDateChange(setYear(date, year));
+									onSetDate(setYear(date, year));
 									onSetMode('month');
 								}}
 							>

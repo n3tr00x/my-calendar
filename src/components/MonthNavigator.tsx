@@ -1,11 +1,10 @@
 import { Button, Flex, useDisclosure } from '@chakra-ui/react';
-import { addMonths, format, subMonths } from 'date-fns';
+import { addMonths, format, startOfMonth, subMonths } from 'date-fns';
 
+import { ChevronLeftIcon } from '@/components/icons/ChevronLeftIcon';
+import { ChevronRightIcon } from '@/components/icons/ChevronRightIcon';
 import { YearPickerModal } from '@/components/YearPicker';
 import { useDate } from '@/hooks/useDate';
-
-import { ChevronLeftIcon } from './icons/ChevronLeftIcon';
-import { ChevronRightIcon } from './icons/ChevronRightIcon';
 
 export function MonthNavigator() {
 	console.log('<MonthNavigator /> render');
@@ -13,12 +12,12 @@ export function MonthNavigator() {
 	const { open, onOpen, onClose } = useDisclosure();
 
 	const setPreviousMonth = () => {
-		const previousMonth = subMonths(date, 1);
+		const previousMonth = startOfMonth(subMonths(date, 1));
 		onDateChange(previousMonth);
 	};
 
 	const setNextMonth = () => {
-		const nextMonth = addMonths(date, 1);
+		const nextMonth = startOfMonth(addMonths(date, 1));
 		onDateChange(nextMonth);
 	};
 
@@ -26,13 +25,13 @@ export function MonthNavigator() {
 		<>
 			{open && <YearPickerModal isOpen={open} onClose={onClose} />}
 			<Flex justifyContent="space-between">
-				<Button onClick={setPreviousMonth} variant="plain">
+				<Button onClick={setPreviousMonth} size="sm" variant="plain">
 					<ChevronLeftIcon />
 				</Button>
-				<Button textAlign="center" py={2} colorPalette="blue" variant="outline" onClick={onOpen}>
+				<Button textAlign="center" size="sm" colorPalette="blue" variant="outline" onClick={onOpen}>
 					{format(date, 'MMM').toUpperCase()} {date.getFullYear()}
 				</Button>
-				<Button onClick={setNextMonth} variant="plain">
+				<Button onClick={setNextMonth} size="sm" variant="plain">
 					<ChevronRightIcon />
 				</Button>
 			</Flex>
