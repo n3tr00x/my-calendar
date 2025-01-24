@@ -3,6 +3,7 @@ import { Box, Flex, Image, Text } from '@chakra-ui/react';
 import { LogOut, Menu } from 'lucide-react';
 
 import logo from '@/assets/logo.png';
+import { NewEventModal } from '@/components/NewEvent';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ColorModeButton } from '@/components/ui/color-mode';
@@ -18,8 +19,6 @@ import {
 } from '@/components/ui/drawer';
 import { useSignOutAccount } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
-
-import { NewEventModal } from './NewEvent';
 
 export function Sidebar() {
 	const { user, removeAuthentication } = useAuth();
