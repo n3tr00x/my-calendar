@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 
 export function Topbar() {
 	return (
-		<Box as="header" py={4}>
+		<Box as="header" p={4}>
 			<nav>
 				<Box as="ul" listStyle="none" display="flex">
 					<li>
@@ -17,7 +17,7 @@ export function Topbar() {
 						<MonthNavigator />
 					</li>
 					<li style={{ marginLeft: 'auto' }}>
-						<Button variant="ghost">
+						<Button variant="ghost" size="sm">
 							<Search />
 						</Button>
 					</li>
