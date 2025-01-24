@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Image, Text } from '@chakra-ui/react';
 import { LogOut, Menu } from 'lucide-react';
 
+import logo from '@/assets/logo.png';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ColorModeButton } from '@/components/ui/color-mode';
@@ -39,13 +40,18 @@ export function Sidebar() {
 		<DrawerRoot placement="start">
 			<DrawerBackdrop />
 			<DrawerTrigger asChild>
-				<Button variant="ghost">
+				<Button size="sm" variant="ghost">
 					<Menu />
 				</Button>
 			</DrawerTrigger>
 			<DrawerContent>
 				<DrawerCloseTrigger />
-				<DrawerHeader>My Calendar</DrawerHeader>
+				<DrawerHeader fontFamily="heading" fontSize="lg">
+					<Flex alignItems="center" gap={2}>
+						<Image src={logo} alt="logo" width="32px" aspectRatio="square" />
+						My Calendar
+					</Flex>
+				</DrawerHeader>
 				<DrawerBody>
 					<NewEventModal />
 				</DrawerBody>
