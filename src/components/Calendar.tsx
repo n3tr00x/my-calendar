@@ -1,80 +1,43 @@
-import { Box, chakra, Grid, GridItem } from '@chakra-ui/react';
-import {
-	eachDayOfInterval,
-	endOfMonth,
-	getDate,
-	isSameDay,
-	isSameMonth,
-	isSunday,
-	isToday,
-	lastDayOfWeek,
-	startOfMonth,
-	startOfWeek,
-} from 'date-fns';
+import { Box } from '@chakra-ui/react';
+import { addMonths, subMonths } from 'date-fns';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper as TSwiper } from 'swiper/types';
 
+import { Sheet } from '@/components/Sheet';
 import { useDate } from '@/hooks/useDate';
+import { getStartOfNextMonth, getStartOfPreviousMonth } from '@/utilities/date';
 
-const WEEK_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-const generateCalendarSheet = (date: Date) => {
-	const firstDayOfMonth = startOfMonth(date);
-	const lastDayOfMonth = endOfMonth(date);
-
-	const firstWeekDay = startOfWeek(firstDayOfMonth, { weekStartsOn: 1 });
-	const lastWeekDay = lastDayOfWeek(lastDayOfMonth, { weekStartsOn: 1 });
-
-	const dates = eachDayOfInterval({ start: firstWeekDay, end: lastWeekDay });
-
-	return dates;
-};
+import 'swiper/css';
 
 export function Calendar() {
+	console.log('<Calendar /> render.');
 	const { date: selectedDate, onDateChange } = useDate();
-	const sheet = generateCalendarSheet(startOfMonth(selectedDate));
+
+	const slideChangeHandler = (swiper: TSwiper) => {
+		const activeIndex = swiper.activeIndex;
+
+		if (activeIndex === 0) {
+			onDateChange(prevDate => getStartOfPreviousMonth(prevDate));
+		} else if (activeIndex === 2) {
+			onDateChange(prevDate => getStartOfNextMonth(prevDate));
+		}
+
+		swiper.slideTo(1);
+	};
 
 	return (
 		<Box id="calendar" mx={2}>
-			<Grid templateColumns="repeat(7, 1fr)">
-				{WEEK_DAYS.map(day => (
-					<GridItem
-						key={day}
-						color={day === 'sunday' ? 'red.700' : undefined}
-						textAlign="center"
-						fontWeight="bold"
-						fontSize="xs"
-					>
-						{day.toUpperCase().slice(0, 1)}
-					</GridItem>
-				))}
-				{sheet.map(date => (
-					<GridItem
-						key={date.toString()}
-						minHeight={16}
-						borderTop="2px solid"
-						borderColor={isSameDay(date, selectedDate) ? 'blue.solid' : 'gray.muted'}
-						color={isSunday(date) ? 'red.700' : undefined}
-						textAlign="center"
-						fontSize="xs"
-						// onClick={() => setSelectedDate(date)}
-						onClick={() => onDateChange(date)}
-					>
-						<chakra.h2
-							fontWeight="semibold"
-							opacity={isSameMonth(date, selectedDate) ? 1 : 0.4}
-							my={2}
-						>
-							<chakra.span
-								px={2}
-								py={1}
-								rounded="md"
-								bgColor={isToday(date) ? 'blue.solid' : undefined}
-							>
-								{getDate(date)}
-							</chakra.span>
-						</chakra.h2>
-					</GridItem>
-				))}
-			</Grid>
+			<Swiper speed={0} initialSlide={1} onSlideChange={slideChangeHandler}>
+				<SwiperSlide>
+					<Sheet selectedDate={subMonths(selectedDate, 1)} />
+				</SwiperSlide>
+				<SwiperSlide>
+					<Sheet selectedDate={selectedDate} />
+				</SwiperSlide>
+				<SwiperSlide>
+					<Sheet selectedDate={addMonths(selectedDate, 1)} />
+				</SwiperSlide>
+			</Swiper>
 		</Box>
 	);
 }
