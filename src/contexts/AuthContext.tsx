@@ -34,27 +34,26 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 	const checkUserAuthStatus = async () => {
 		setIsLoading(true);
-		try {
-			const currentAccount = (await getCurrentUser()) as IUser;
 
+		try {
+			const currentAccount = await getCurrentUser();
+			setIsAuthenticated(true);
+			setUser(currentAccount);
+		} catch (error) {
 			if (
-				currentAccount instanceof AppwriteException &&
+				error instanceof AppwriteException &&
 				window.location.pathname !== '/sign-in' &&
 				window.location.pathname !== '/sign-up'
 			) {
-				const code = currentAccount.code;
+				const code = error.code;
 				return toaster.create({
 					title: `Account unauthorized. Please try to sign in again. Code ${code}`,
 					type: 'error',
 					duration: 4000,
 				});
 			}
-
-			setIsAuthenticated(true);
-			setUser(currentAccount);
-		} catch (error) {
 			setIsAuthenticated(false);
-			console.error(error);
+			setUser(null);
 		} finally {
 			setIsLoading(false);
 		}

@@ -2,7 +2,7 @@ import { AppwriteException, ID, Query } from 'appwrite';
 
 import { account, config, databases } from '@/lib/appwrite';
 import { saveNewUser } from '@/lib/appwrite/crud';
-import { INewAccount, ISignInAccount } from '@/types/appwrite';
+import { INewAccount, ISignInAccount, IUser } from '@/types/appwrite';
 
 export async function createAccount(user: INewAccount) {
 	try {
@@ -43,14 +43,14 @@ export async function signOutAccount() {
 }
 
 export async function getCurrentUser() {
-	try {
-		const currentAccount = await account.get();
-		const currentUser = await databases.listDocuments(config.databaseId, config.usersCollectionId, [
-			Query.equal('accountId', currentAccount.$id),
-		]);
+	const currentAccount = await account.get();
+	const { documents } = await databases.listDocuments(config.databaseId, config.usersCollectionId, [
+		Query.equal('accountId', currentAccount.$id),
+	]);
 
-		return currentUser.documents[0];
-	} catch (error) {
-		return error;
+	if (documents.length === 0) {
+		throw new Error('User not found.');
 	}
+
+	return documents[0] as IUser;
 }
