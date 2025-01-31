@@ -14,6 +14,10 @@ export const addHoursAndResetMinutes = (date: Date, hours?: number) => {
 	return format(resettedMinutesDate, 'HH:mm');
 };
 
-export const formatToISODate = (date: Date) => {
-	return date.toISOString().split('T')[0];
+export const formatToISODate = (date: Date | string) => {
+	return new Date(date).toISOString().split('T')[0];
+};
+
+export const formatDateToYearMonthDay = (date: Date) => {
+	return format(date, 'yyyy-MM-dd');
 };

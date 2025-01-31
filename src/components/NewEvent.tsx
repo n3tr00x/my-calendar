@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { createListCollection, Input, VStack } from '@chakra-ui/react';
+import { createListCollection, Flex, Input, Spinner, VStack } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AppwriteException } from 'appwrite';
 import { CaseSensitive, MapPin, MoveRight, Plus } from 'lucide-react';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,23 +27,17 @@ import {
 	SelectValueText,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { toaster } from '@/components/ui/toaster';
+import { useAddNewEvent } from '@/hooks/appwrite';
+import { useAuth } from '@/hooks/useAuth';
 import { useDate } from '@/hooks/useDate';
-import { addHoursAndResetMinutes, formatToISODate } from '@/utilities/date';
-
-const NewEventSchema = z.object({
-	title: z.string().min(1, 'Title is required').trim(),
-	allDay: z.boolean(),
-	startDate: z.string(),
-	endDate: z.string(),
-	startTime: z.string().nullable(),
-	endTime: z.string().nullable(),
-	location: z.string().nullable(),
-	repeat: z.string().array(),
-});
+import { NewEventSchema } from '@/schemas/NewEventSchema';
+import { NewEvent } from '@/types/appwrite';
+import { addHoursAndResetMinutes, formatDateToYearMonthDay } from '@/utilities/date';
 
 const repeatFrequencyCollection = createListCollection({
 	items: [
-		{ label: "Don't repeat", value: 'default' },
+		{ label: "Don't repeat", value: 'no-repeat' },
 		{ label: 'Everyday', value: 'daily' },
 		{ label: 'Every week', value: 'weekly' },
 		{ label: 'Every monthly', value: 'monthly' },
@@ -51,7 +45,10 @@ const repeatFrequencyCollection = createListCollection({
 });
 
 export function NewEventModal() {
+	console.log('<NewEventModal /> render.');
 	const { date } = useDate();
+	const { user } = useAuth();
+	const { mutateAsync: addNewEvent } = useAddNewEvent();
 	const contentRef = useRef<HTMLDivElement>(null);
 
 	const {
@@ -60,22 +57,23 @@ export function NewEventModal() {
 		watch,
 		handleSubmit,
 		setValue,
-		formState: { errors },
-	} = useForm<z.infer<typeof NewEventSchema>>({
+		reset,
+		formState: { errors, isSubmitting },
+	} = useForm<NewEvent>({
 		resolver: zodResolver(NewEventSchema),
 		defaultValues: {
 			title: '',
-			allDay: false,
-			startDate: formatToISODate(date),
-			endDate: formatToISODate(date),
+			isAllDay: false,
+			startDate: formatDateToYearMonthDay(date),
+			endDate: formatDateToYearMonthDay(date),
 			startTime: addHoursAndResetMinutes(date),
 			endTime: addHoursAndResetMinutes(date, 2),
 			location: null,
-			repeat: ['default'],
+			repeat: ['no-repeat'],
 		},
 	});
 
-	const isAllDaySelected = watch('allDay');
+	const isAllDaySelected = watch('isAllDay');
 
 	if (isAllDaySelected) {
 		setValue('startTime', null);
@@ -85,8 +83,34 @@ export function NewEventModal() {
 		setValue('endTime', addHoursAndResetMinutes(date, 2));
 	}
 
-	const onSubmit = (data: z.infer<typeof NewEventSchema>) => {
-		console.log(data);
+	const onSubmit = async (event: NewEvent) => {
+		try {
+			const newEvent = {
+				...event,
+				user: user?.$id,
+				accountId: user?.accountId,
+			};
+
+			await addNewEvent(newEvent);
+
+			return toaster.create({
+				title: 'The event has been added!',
+				type: 'success',
+				placement: 'bottom-end',
+				duration: 4000,
+			});
+		} catch (error) {
+			if (error instanceof AppwriteException) {
+				return toaster.create({
+					title: 'New event problem',
+					type: 'error',
+					description: error?.message,
+					placement: 'bottom-end',
+					duration: 4000,
+				});
+			}
+		}
+		reset();
 	};
 
 	return (
@@ -112,7 +136,7 @@ export function NewEventModal() {
 							</Field>
 							<Field>
 								<Controller
-									name="allDay"
+									name="isAllDay"
 									control={control}
 									render={({ field: { name, onChange, value } }) => (
 										<Switch
@@ -129,16 +153,20 @@ export function NewEventModal() {
 									)}
 								/>
 							</Field>
-							<Field display="flex" flexDirection="row" alignItems="center" gap={8}>
-								<Input {...register('startDate')} type="date" />
-								<MoveRight width={80} />
-								<Input {...register('endDate')} type="date" />
+							<Field invalid={!!errors.endDate} errorText={errors.endDate?.message}>
+								<Flex flexDirection="row" alignItems="center" gap={8} maxW="full">
+									<Input {...register('startDate')} type="date" />
+									<MoveRight width={80} />
+									<Input {...register('endDate')} type="date" />
+								</Flex>
 							</Field>
 							{!isAllDaySelected && (
-								<Field display="flex" flexDirection="row" alignItems="center" gap={8}>
-									<Input {...register('startTime')} type="time" />
-									<MoveRight width={80} />
-									<Input {...register('endTime')} type="time" />
+								<Field invalid={!!errors.endTime} errorText={errors.endTime?.message}>
+									<Flex flexDirection="row" alignItems="center" gap={8} w="full">
+										<Input {...register('startTime')} type="time" />
+										<MoveRight width={80} />
+										<Input {...register('endTime')} type="time" />
+									</Flex>
 								</Field>
 							)}
 							<Field>
@@ -177,8 +205,8 @@ export function NewEventModal() {
 						<DialogActionTrigger asChild>
 							<Button variant="outline">Cancel</Button>
 						</DialogActionTrigger>
-						<Button type="submit" colorPalette="blue">
-							Save
+						<Button type="submit" colorPalette="blue" minWidth={16}>
+							{isSubmitting ? <Spinner colorPalette="blue" size="sm" /> : 'Add'}
 						</Button>
 					</DialogFooter>
 					<DialogCloseTrigger />

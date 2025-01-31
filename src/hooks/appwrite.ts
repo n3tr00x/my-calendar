@@ -1,7 +1,8 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { createAccount, signInAccount, signOutAccount } from '@/lib/appwrite/auth';
-import { INewAccount, ISignInAccount } from '@/types/appwrite';
+import { addNewEvent, getEvents } from '@/lib/appwrite/crud';
+import { INewAccount, ISignInAccount, NewEvent } from '@/types/appwrite';
 
 export function useCreateUserAccount() {
 	return useMutation({
@@ -18,5 +19,25 @@ export function useSignInAccount() {
 export function useSignOutAccount() {
 	return useMutation({
 		mutationFn: () => signOutAccount(),
+	});
+}
+
+export function useEvents(date: Date) {
+	return useQuery({
+		queryKey: ['events', date],
+		queryFn: () => getEvents(date),
+		staleTime: Infinity,
+		gcTime: 1000 * 60 * 1, // 1min,
+	});
+}
+
+export function useAddNewEvent() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (event: NewEvent) => addNewEvent(event),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['events'] });
+		},
 	});
 }
