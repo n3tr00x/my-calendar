@@ -136,7 +136,7 @@ export function SignUpPage() {
 				</form>
 				<Text mt={5} textAlign="center">
 					Have an account?{' '}
-					<ChakraLink color="blue.solid">
+					<ChakraLink color="blue.solid" asChild>
 						<Link to="/sign-in">Login</Link>
 					</ChakraLink>
 				</Text>

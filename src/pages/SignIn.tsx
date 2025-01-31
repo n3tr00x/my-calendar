@@ -90,7 +90,7 @@ export function SignInPage() {
 				</form>
 				<Text mt={5} textAlign="center">
 					Don't have an account?{' '}
-					<ChakraLink color="blue.solid">
+					<ChakraLink color="blue.solid" asChild>
 						<Link to="/sign-up">Register</Link>
 					</ChakraLink>
 				</Text>
