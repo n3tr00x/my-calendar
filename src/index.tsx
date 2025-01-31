@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { ColorModeProvider } from '@/components/ui/color-mode';
 import { Toaster } from '@/components/ui/toaster';
@@ -16,6 +17,7 @@ const queryClient = new QueryClient();
 createRoot(root).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
+			<ReactQueryDevtools initialIsOpen={false} />
 			<ChakraProvider value={system}>
 				<ColorModeProvider enableSystem>
 					<AuthProvider>
