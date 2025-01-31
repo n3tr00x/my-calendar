@@ -56,32 +56,23 @@ export function SignUpPage() {
 	});
 
 	const onSubmit = async ({ email, username, password }: z.infer<typeof SignUpValidation>) => {
-		const newUser = await createAccount({ email, password, username });
+		try {
+			await createAccount({ email, password, username });
+			await signInAccount({ email, password });
+			await checkUserAuthStatus();
 
-		if (newUser instanceof AppwriteException) {
-			return toaster.create({
-				title: 'Sign up problem!',
-				type: 'error',
-				description: newUser?.message,
-				placement: 'bottom-end',
-				duration: 4000,
-			});
+			navigate('/');
+		} catch (error) {
+			if (error instanceof AppwriteException) {
+				return toaster.create({
+					title: 'Sign up problem!',
+					type: 'error',
+					description: error?.message,
+					placement: 'bottom-end',
+					duration: 4000,
+				});
+			}
 		}
-
-		const session = await signInAccount({ email, password });
-
-		if (session instanceof AppwriteException) {
-			return toaster.create({
-				title: 'Sign up problem!',
-				type: 'error',
-				description: session?.message,
-				placement: 'bottom-end',
-				duration: 4000,
-			});
-		}
-
-		await checkUserAuthStatus();
-		navigate('/');
 	};
 
 	return (

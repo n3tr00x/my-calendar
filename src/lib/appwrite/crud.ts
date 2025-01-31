@@ -2,53 +2,42 @@ import { ID, Query } from 'appwrite';
 
 import { account, config, databases } from '@/lib/appwrite';
 import { INewUser, NewEvent } from '@/types/appwrite';
+import { formatToISODate } from '@/utilities/date';
 
 export async function saveNewUser(user: INewUser) {
-	try {
-		const newUser = await databases.createDocument(
-			config.databaseId,
-			config.usersCollectionId,
-			ID.unique(),
-			user,
-		);
-
-		return newUser;
-	} catch (error) {
-		console.error('saveNewUser', error);
-		return error;
-	}
+	return await databases.createDocument(
+		config.databaseId,
+		config.usersCollectionId,
+		ID.unique(),
+		user,
+	);
 }
 
-export async function getEvents(date: string) {
-	try {
-		const currentAccount = await account.get();
+export async function getEvents(date: Date) {
+	const currentAccount = await account.get();
 
-		if (!currentAccount) {
-			throw new Error('No logged user.');
-		}
-
-		console.log('get events', new Date(date).toISOString());
-
-		const events = await databases.listDocuments(config.databaseId, config.eventsCollectionId, [
-			Query.equal('accountId', currentAccount.$id),
-			Query.and([
-				Query.lessThanEqual('startDate', new Date(date).toISOString()),
-				Query.greaterThanEqual('endDate', new Date(date).toISOString()),
-			]),
-		]);
-
-		return events;
-	} catch (error) {
-		console.error('getEvents');
-		return error;
+	if (!currentAccount) {
+		throw new Error('No logged user.');
 	}
+
+	const events = await databases.listDocuments(config.databaseId, config.eventsCollectionId, [
+		Query.equal('accountId', currentAccount.$id),
+		Query.and([
+			Query.lessThanEqual('startDate', formatToISODate(date)),
+			Query.greaterThanEqual('endDate', formatToISODate(date)),
+		]),
+	]);
+
+	return events.documents;
 }
 
 export async function addNewEvent(event: NewEvent) {
 	try {
 		const processedDates = {
-			startDate: new Date(event.startDate).toISOString(),
-			endDate: new Date(event.endDate).toISOString(),
+			// startDate: new Date(event.startDate).toISOString(),
+			// endDate: new Date(event.endDate).toISOString(),
+			startDate: formatToISODate(new Date(event.startDate)),
+			endDate: formatToISODate(new Date(event.endDate)),
 		};
 
 		const newEvent = {

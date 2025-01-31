@@ -38,20 +38,22 @@ export function SignInPage() {
 	});
 
 	const onSubmit = async ({ email, password }: z.infer<typeof SignInValidation>) => {
-		const session = await signInAccount({ email, password });
+		try {
+			await signInAccount({ email, password });
+			await checkUserAuthStatus();
 
-		if (session instanceof AppwriteException) {
-			return toaster.create({
-				title: 'Sign in problem!',
-				type: 'error',
-				description: session?.message,
-				placement: 'bottom-end',
-				duration: 4000,
-			});
+			navigate('/');
+		} catch (error) {
+			if (error instanceof AppwriteException) {
+				return toaster.create({
+					title: 'Sign in problem!',
+					type: 'error',
+					description: error?.message,
+					placement: 'bottom-end',
+					duration: 4000,
+				});
+			}
 		}
-
-		await checkUserAuthStatus();
-		navigate('/');
 	};
 
 	return (
