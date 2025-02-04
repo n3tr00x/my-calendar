@@ -39,7 +39,7 @@ export function Sidebar() {
 		<DrawerRoot placement="start">
 			<DrawerBackdrop />
 			<DrawerTrigger asChild>
-				<Button size="sm" variant="ghost">
+				<Button size="xs" variant="ghost">
 					<Menu />
 				</Button>
 			</DrawerTrigger>

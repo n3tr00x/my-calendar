@@ -25,13 +25,13 @@ export function MonthNavigator() {
 		<>
 			{open && <YearPickerModal isOpen={open} onClose={onClose} />}
 			<Flex justifyContent="space-between">
-				<Button onClick={setPreviousMonth} size="sm" variant="plain">
+				<Button onClick={setPreviousMonth} size="xs" variant="plain">
 					<ChevronLeftIcon />
 				</Button>
-				<Button textAlign="center" size="sm" colorPalette="blue" variant="outline" onClick={onOpen}>
+				<Button textAlign="center" size="xs" colorPalette="blue" variant="outline" onClick={onOpen}>
 					{format(date, 'MMM').toUpperCase()} {date.getFullYear()}
 				</Button>
-				<Button onClick={setNextMonth} size="sm" variant="plain">
+				<Button onClick={setNextMonth} size="xs" variant="plain">
 					<ChevronRightIcon />
 				</Button>
 			</Flex>

@@ -17,7 +17,7 @@ export function Topbar() {
 						<MonthNavigator />
 					</li>
 					<li style={{ marginLeft: 'auto' }}>
-						<Button variant="ghost" size="sm">
+						<Button variant="ghost" size="xs">
 							<Search />
 						</Button>
 					</li>
