@@ -2,7 +2,7 @@ import { ID, Query } from 'appwrite';
 
 import { account, config, databases } from '@/lib/appwrite';
 import { Event, INewUser, NewEvent } from '@/types/appwrite';
-import { formatToISODate } from '@/utilities/date';
+import { formatDateToYearMonthDay } from '@/utilities/date';
 
 export async function saveNewUser(user: INewUser) {
 	return await databases.createDocument(
@@ -23,8 +23,8 @@ export async function getEvents(date: Date) {
 	const events = await databases.listDocuments(config.databaseId, config.eventsCollectionId, [
 		Query.equal('accountId', currentAccount.$id),
 		Query.and([
-			Query.lessThanEqual('startDate', formatToISODate(date)),
-			Query.greaterThanEqual('endDate', formatToISODate(date)),
+			Query.lessThanEqual('startDate', formatDateToYearMonthDay(date)),
+			Query.greaterThanEqual('endDate', formatDateToYearMonthDay(date)),
 		]),
 	]);
 
@@ -32,14 +32,8 @@ export async function getEvents(date: Date) {
 }
 
 export async function addNewEvent(event: NewEvent) {
-	const processedDates = {
-		startDate: formatToISODate(new Date(event.startDate)),
-		endDate: formatToISODate(new Date(event.endDate)),
-	};
-
 	const newEvent = {
 		...event,
-		...processedDates,
 		repeat: event.repeat[0],
 	};
 

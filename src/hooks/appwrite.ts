@@ -27,7 +27,7 @@ export function useEvents(date: Date) {
 		queryKey: ['events', date],
 		queryFn: () => getEvents(date),
 		staleTime: Infinity,
-		gcTime: 1000 * 60 * 1, // 1min,
+		gcTime: 1000 * 60 * 60, // 1h,
 	});
 }
 

@@ -28,6 +28,8 @@ export type ISignInAccount = {
 	password: string;
 };
 
+export type NewEventForm = z.infer<typeof NewEventSchema>;
+
 export type NewEvent = z.infer<typeof NewEventSchema> & { user: string | undefined };
 
 export type Event = Models.Document & {

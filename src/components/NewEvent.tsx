@@ -1,9 +1,9 @@
-import { useRef } from 'react';
+import { ReactElement, RefAttributes, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { createListCollection, Flex, Input, Spinner, VStack } from '@chakra-ui/react';
+import { ButtonProps, createListCollection, Flex, Input, Spinner, VStack } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppwriteException } from 'appwrite';
-import { CaseSensitive, MapPin, MoveRight, Plus } from 'lucide-react';
+import { CaseSensitive, MapPin, MoveRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -32,7 +32,7 @@ import { useAddNewEvent } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 import { useDate } from '@/hooks/useDate';
 import { NewEventSchema } from '@/schemas/NewEventSchema';
-import { NewEvent } from '@/types/appwrite';
+import { NewEventForm } from '@/types/appwrite';
 import { addHoursAndResetMinutes, formatDateToYearMonthDay } from '@/utilities/date';
 
 const repeatFrequencyCollection = createListCollection({
@@ -44,7 +44,11 @@ const repeatFrequencyCollection = createListCollection({
 	],
 });
 
-export function NewEventModal() {
+type NewEventModalProps = {
+	dialogTriggerComponent: ReactElement<ButtonProps & RefAttributes<HTMLButtonElement>>;
+};
+
+export function NewEventModal({ dialogTriggerComponent }: NewEventModalProps) {
 	console.log('<NewEventModal /> render.');
 	const { date } = useDate();
 	const { user } = useAuth();
@@ -59,7 +63,7 @@ export function NewEventModal() {
 		setValue,
 		reset,
 		formState: { errors, isSubmitting },
-	} = useForm<NewEvent>({
+	} = useForm<NewEventForm>({
 		resolver: zodResolver(NewEventSchema),
 		defaultValues: {
 			title: '',
@@ -75,6 +79,9 @@ export function NewEventModal() {
 
 	const isAllDaySelected = watch('isAllDay');
 
+	setValue('startDate', formatDateToYearMonthDay(date));
+	setValue('endDate', formatDateToYearMonthDay(date));
+
 	if (isAllDaySelected) {
 		setValue('startTime', null);
 		setValue('endTime', null);
@@ -83,7 +90,7 @@ export function NewEventModal() {
 		setValue('endTime', addHoursAndResetMinutes(date, 2));
 	}
 
-	const onSubmit = async (event: NewEvent) => {
+	const submitHandler = async (event: NewEventForm) => {
 		try {
 			const newEvent = {
 				...event,
@@ -109,19 +116,16 @@ export function NewEventModal() {
 					duration: 4000,
 				});
 			}
+		} finally {
+			reset();
 		}
-		reset();
 	};
 
 	return (
 		<DialogRoot size="xs">
-			<DialogTrigger asChild>
-				<Button variant="outline" colorPalette="blue" w="full" justifyContent="flex-start">
-					<Plus /> Add event
-				</Button>
-			</DialogTrigger>
+			<DialogTrigger asChild>{dialogTriggerComponent}</DialogTrigger>
 			<DialogContent ref={contentRef}>
-				<form onSubmit={handleSubmit(onSubmit)}>
+				<form onSubmit={handleSubmit(submitHandler)}>
 					<DialogHeader>
 						<DialogTitle textAlign="center" fontFamily="heading">
 							Add new event

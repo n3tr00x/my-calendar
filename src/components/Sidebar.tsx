@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Box, Flex, Image, Text } from '@chakra-ui/react';
-import { LogOut, Menu } from 'lucide-react';
+import { LogOut, Menu, Plus } from 'lucide-react';
 
 import logo from '@/assets/logo.png';
 import { NewEventModal } from '@/components/NewEvent';
@@ -52,7 +52,13 @@ export function Sidebar() {
 					</Flex>
 				</DrawerHeader>
 				<DrawerBody>
-					<NewEventModal />
+					<NewEventModal
+						dialogTriggerComponent={
+							<Button variant="outline" colorPalette="blue" w="full" justifyContent="flex-start">
+								<Plus /> Add event
+							</Button>
+						}
+					/>
 				</DrawerBody>
 				<DrawerFooter justifyContent="space-between">
 					<Box p={1}>
