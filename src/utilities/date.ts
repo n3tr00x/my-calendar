@@ -21,3 +21,7 @@ export const formatToISODate = (date: Date | string) => {
 export const formatDateToYearMonthDay = (date: Date) => {
 	return format(date, 'yyyy-MM-dd');
 };
+
+export const formatShortDate = (date: Date) => {
+	return format(date, 'd MMM');
+};
