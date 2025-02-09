@@ -1,4 +1,4 @@
-import { ReactElement, RefAttributes, useRef } from 'react';
+import { ReactElement, RefAttributes, useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ButtonProps, createListCollection, Flex, Input, Spinner, VStack } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,6 +44,12 @@ const repeatFrequencyCollection = createListCollection({
 	],
 });
 
+const calculateEndTime = (time: string) => {
+	const [hours, minutes] = time.split(':').map(Number);
+	const newHours = (hours + 1) % 24;
+	return `${newHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
+
 type NewEventModalProps = {
 	dialogTriggerComponent: ReactElement<ButtonProps & RefAttributes<HTMLButtonElement>>;
 };
@@ -78,17 +84,29 @@ export function NewEventModal({ dialogTriggerComponent }: NewEventModalProps) {
 	});
 
 	const isAllDaySelected = watch('isAllDay');
+	const startTime = watch('startTime');
 
-	setValue('startDate', formatDateToYearMonthDay(date));
-	setValue('endDate', formatDateToYearMonthDay(date));
+	useEffect(() => {
+		setValue('startDate', formatDateToYearMonthDay(date));
+		setValue('endDate', formatDateToYearMonthDay(date));
+	}, [date, setValue]);
 
-	if (isAllDaySelected) {
-		setValue('startTime', null);
-		setValue('endTime', null);
-	} else {
-		setValue('startTime', addHoursAndResetMinutes(date, 1));
-		setValue('endTime', addHoursAndResetMinutes(date, 2));
-	}
+	useEffect(() => {
+		if (isAllDaySelected) {
+			setValue('startTime', null);
+			setValue('endTime', null);
+		} else {
+			setValue('startTime', addHoursAndResetMinutes(date, 1));
+			setValue('endTime', addHoursAndResetMinutes(date, 2));
+		}
+	}, [isAllDaySelected, setValue, date]);
+
+	useEffect(() => {
+		if (startTime) {
+			const newEndTime = calculateEndTime(startTime);
+			setValue('endTime', newEndTime);
+		}
+	}, [startTime, setValue]);
 
 	const submitHandler = async (event: NewEventForm) => {
 		try {
