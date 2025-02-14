@@ -22,10 +22,11 @@ export const NewEventSchema = z
 	.object({
 		title: z.string().min(1, 'Title is required').trim(),
 		isAllDay: z.boolean(),
-		startDate: z.string(),
-		endDate: z.string(),
-		startTime: z.string().nullable(),
-		endTime: z.string().nullable(),
+		startDate: z.string().date(),
+		endDate: z.string().date(),
+		startTime: z.string().time().nullable(),
+		endTime: z.string().time().nullable(),
+		description: z.string().nullable(),
 		location: z.string().nullable(),
 		repeat: z.array(z.enum(['no-repeat', 'daily', 'weekly', 'monthly'])),
 	})
