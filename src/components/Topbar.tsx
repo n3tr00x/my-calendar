@@ -1,6 +1,7 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { Search } from 'lucide-react';
 
+import { EventSearchPopover } from '@/components/EventSearchPopover';
 import { MonthNavigator } from '@/components/MonthNavigator';
 import { Sidebar } from '@/components/Sidebar';
 import { Button } from '@/components/ui/button';
@@ -24,9 +25,13 @@ export function Topbar() {
 					</Flex>
 					<Flex gap={1}>
 						<li>
-							<Button variant="ghost" size="xs" aspectRatio="square">
-								<Search />
-							</Button>
+							<EventSearchPopover
+								popoverTriggerComponent={
+									<Button variant="ghost" size="xs" aspectRatio="square">
+										<Search />
+									</Button>
+								}
+							/>
 						</li>
 						<li style={{ marginLeft: 'auto' }}>
 							<Button variant="outline" size="xs" rounded="sm" onClick={() => onDateChange(today)}>
