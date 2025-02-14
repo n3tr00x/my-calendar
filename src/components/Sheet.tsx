@@ -1,4 +1,4 @@
-import { chakra, Grid, GridItem } from '@chakra-ui/react';
+import { Box, chakra, Grid, GridItem } from '@chakra-ui/react';
 import {
 	eachDayOfInterval,
 	endOfMonth,
@@ -7,12 +7,14 @@ import {
 	isSameMonth,
 	isSunday,
 	isToday,
+	isWithinInterval,
 	lastDayOfWeek,
 	setHours,
 	startOfMonth,
 	startOfWeek,
 } from 'date-fns';
 
+import { useEvents } from '@/hooks/appwrite';
 import { useDate } from '@/hooks/useDate';
 
 const WEEK_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -31,8 +33,9 @@ const generateCalendarSheet = (date: Date) => {
 
 export function Sheet({ selectedDate }: { selectedDate: Date }) {
 	const { onDateChange } = useDate();
-	const sheet = generateCalendarSheet(startOfMonth(selectedDate));
+	const { data: events } = useEvents(selectedDate);
 
+	const sheet = generateCalendarSheet(startOfMonth(selectedDate));
 	const rowCount = Math.ceil(sheet.length / 7);
 
 	return (
@@ -82,6 +85,15 @@ export function Sheet({ selectedDate }: { selectedDate: Date }) {
 								{getDate(date)}
 							</chakra.span>
 						</chakra.h2>
+						{events
+							?.filter(event =>
+								isWithinInterval(date, {
+									start: new Date(event.startDate),
+									end: new Date(event.endDate),
+								}),
+							)
+							.slice(0, 3) // Ograniczenie do trzech eventów
+							.map(event => <Box key={event.$id} h={1} bg="blue.500" m={1} rounded="full" />)}
 					</GridItem>
 				))}
 			</Grid>

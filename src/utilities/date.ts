@@ -25,3 +25,7 @@ export const formatDateToYearMonthDay = (date: Date) => {
 export const formatShortDate = (date: Date) => {
 	return format(date, 'd MMM');
 };
+
+export const formatDateToMonthYear = (date: Date) => {
+	return format(date, 'LLLL yyyy');
+};

@@ -1,37 +1,10 @@
 import { Fragment } from 'react';
-import { Box, Flex, Separator, Text } from '@chakra-ui/react';
-import { CalendarRange } from 'lucide-react';
+import { Box, Separator } from '@chakra-ui/react';
 
+import { SavedEvent } from '@/components/SavedEvent';
 import { Event } from '@/types/appwrite';
 
-type EventListProps = {
-	events: Event[];
-};
-
-function SavedEvent({ event }: { event: Event }) {
-	return (
-		<Flex gap={2} px={3} py={5} minH={20}>
-			<Box w={10} alignSelf="flex-start">
-				{event.isAllDay ? (
-					<CalendarRange />
-				) : (
-					<Text fontSize="sm" fontWeight="bold">
-						{event.startTime}
-					</Text>
-				)}
-			</Box>
-			<Box width={1.5} rounded="xl" backgroundColor="blue.500" />
-			<Box>
-				<Text fontFamily="heading" fontSize="sm">
-					{event.title}
-				</Text>
-				<Text fontSize="xs" color="gray.500">
-					{event.isAllDay ? 'All day' : `${event.startTime} - ${event.endTime}`}
-				</Text>
-			</Box>
-		</Flex>
-	);
-}
+type EventListProps = { events: Event[] };
 
 export function EventList({ events }: EventListProps) {
 	const allDayEvents = events.filter(event => event.isAllDay);
