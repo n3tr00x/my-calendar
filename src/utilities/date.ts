@@ -18,7 +18,7 @@ export const formatToISODate = (date: Date | string) => {
 	return new Date(date).toISOString().split('T')[0];
 };
 
-export const formatDateToYearMonthDay = (date: Date) => {
+export const formatDateToYearMonthDay = (date: Date | string) => {
 	return format(date, 'yyyy-MM-dd');
 };
 

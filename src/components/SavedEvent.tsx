@@ -1,14 +1,18 @@
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { RefAttributes } from 'react';
+import { Box, Flex, FlexProps, Text } from '@chakra-ui/react';
 import { CalendarRange } from 'lucide-react';
 
 import { Event } from '@/types/appwrite';
 
-type SavedEventProps = { event: Event };
+type SavedEventProps = {
+	event: Event;
+	savedEventStyles?: FlexProps & RefAttributes<HTMLDivElement>;
+};
 
-export function SavedEvent({ event }: SavedEventProps) {
+export function SavedEvent({ event, savedEventStyles }: SavedEventProps) {
 	return (
-		<Flex gap={2} px={3} py={5} minH={20}>
-			<Box w={10} alignSelf="flex-start">
+		<Flex gap={2} {...savedEventStyles}>
+			<Box w={10} alignSelf={event.isAllDay ? 'center' : 'flex-start'}>
 				{event.isAllDay ? (
 					<CalendarRange />
 				) : (

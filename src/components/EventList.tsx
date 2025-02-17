@@ -41,14 +41,14 @@ export function EventList({ events }: EventListProps) {
 		>
 			{allDayEvents.map((event, index) => (
 				<Fragment key={event.$id}>
-					<SavedEvent event={event} />
+					<SavedEvent event={event} savedEventStyles={{ px: 3, py: 5, minH: 20 }} />
 					{index !== allDayEvents.length - 1 && <Separator />}
 				</Fragment>
 			))}
 			{isNoneAllDayEventsExists && isAllDayEventsExists && <Separator />}
 			{sortedNonAllDayEvents.map((event, index) => (
 				<Fragment key={event.$id}>
-					<SavedEvent key={event.$id} event={event} />
+					<SavedEvent event={event} savedEventStyles={{ px: 3, py: 5, minH: 20 }} />
 					{index !== sortedNonAllDayEvents.length - 1 && <Separator />}
 				</Fragment>
 			))}
