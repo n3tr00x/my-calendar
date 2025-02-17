@@ -81,7 +81,7 @@ export function YearPickerModal({ isOpen, onClose }: YearPickerModalProps) {
 			placement="bottom"
 		>
 			<DialogBackdrop />
-			<DialogContent>
+			<DialogContent mx={{ base: 2, sm: 0 }}>
 				<DialogHeader textAlign="center">
 					<Button variant="ghost" onClick={setPreviousYear}>
 						<ChevronLeft />
