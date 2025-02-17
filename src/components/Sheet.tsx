@@ -14,6 +14,7 @@ import {
 	startOfWeek,
 } from 'date-fns';
 
+import { EventPlaceholder } from '@/components/EventPlaceholder';
 import { useEvents } from '@/hooks/appwrite';
 import { useDate } from '@/hooks/useDate';
 
@@ -33,7 +34,7 @@ const generateCalendarSheet = (date: Date) => {
 
 export function Sheet({ selectedDate }: { selectedDate: Date }) {
 	const { onDateChange } = useDate();
-	const { data: events } = useEvents(selectedDate);
+	const { data: events, isLoading } = useEvents(selectedDate);
 
 	const sheet = generateCalendarSheet(startOfMonth(selectedDate));
 	const rowCount = Math.ceil(sheet.length / 7);
@@ -85,15 +86,19 @@ export function Sheet({ selectedDate }: { selectedDate: Date }) {
 								{getDate(date)}
 							</chakra.span>
 						</chakra.h2>
-						{events
-							?.filter(event =>
-								isWithinInterval(date, {
-									start: new Date(event.startDate),
-									end: new Date(event.endDate),
-								}),
-							)
-							.slice(0, 3) // Ograniczenie do trzech eventów
-							.map(event => <Box key={event.$id} h={1} bg="blue.500" m={1} rounded="full" />)}
+						{isLoading ? (
+							<EventPlaceholder />
+						) : (
+							events
+								?.filter(event =>
+									isWithinInterval(date, {
+										start: new Date(event.startDate),
+										end: new Date(event.endDate),
+									}),
+								)
+								.slice(0, 3)
+								.map(event => <Box key={event.$id} h={1} bg="blue.500" m={1} rounded="full" />)
+						)}
 					</GridItem>
 				))}
 			</Grid>
