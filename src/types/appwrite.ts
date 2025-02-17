@@ -30,7 +30,7 @@ export type ISignInAccount = {
 
 export type NewEventForm = z.infer<typeof NewEventSchema>;
 
-export type NewEvent = z.infer<typeof NewEventSchema> & { user: string | undefined };
+export type NewEvent = z.infer<typeof NewEventSchema> & { user?: string; accountId?: string };
 
 export type Event = Models.Document & {
 	accountId: string;
