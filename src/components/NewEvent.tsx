@@ -1,6 +1,14 @@
 import { ReactElement, RefAttributes, useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { ButtonProps, createListCollection, Flex, Input, Spinner, VStack } from '@chakra-ui/react';
+import {
+	ButtonProps,
+	createListCollection,
+	Flex,
+	Input,
+	Spinner,
+	Textarea,
+	VStack,
+} from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppwriteException } from 'appwrite';
 import { CaseSensitive, MapPin, MoveRight } from 'lucide-react';
@@ -79,6 +87,7 @@ export function NewEventModal({ dialogTriggerComponent }: NewEventModalProps) {
 			startTime: addHoursAndResetMinutes(date),
 			endTime: addHoursAndResetMinutes(date, 2),
 			location: null,
+			description: null,
 			repeat: ['no-repeat'],
 		},
 	});
@@ -191,6 +200,9 @@ export function NewEventModal({ dialogTriggerComponent }: NewEventModalProps) {
 									</Flex>
 								</Field>
 							)}
+							<Field>
+								<Textarea minH={10} placeholder="Description" {...register('description')} />
+							</Field>
 							<Field>
 								<InputGroup startElement={<MapPin />} w="full">
 									<Input {...register('location')} ps={12} placeholder="Location" />
