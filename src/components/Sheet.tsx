@@ -66,10 +66,10 @@ export function Sheet({ selectedDate }: { selectedDate: Date }) {
 						color={isSunday(date) ? 'red.700' : undefined}
 						textAlign="center"
 						fontSize="xs"
-						// onClick={() => setSelectedDate(date)}
 						onClick={() => {
 							onDateChange(setHours(date, new Date().getHours()));
 						}}
+						cursor="pointer"
 					>
 						<chakra.h2
 							fontWeight="semibold"

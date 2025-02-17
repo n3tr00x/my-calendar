@@ -27,7 +27,7 @@ export function Calendar() {
 
 	return (
 		<Box as="section" id="calendar">
-			<Swiper initialSlide={1} onSlideChange={slideChangeHandler}>
+			<Swiper initialSlide={1} onSlideChange={slideChangeHandler} spaceBetween={24}>
 				<SwiperSlide>
 					<Sheet selectedDate={subMonths(selectedDate, 1)} />
 				</SwiperSlide>
