@@ -22,12 +22,12 @@ export function Calendar() {
 			onDateChange(prevDate => getStartOfNextMonth(prevDate));
 		}
 
-		swiper.slideTo(1);
+		swiper.slideTo(1, 0, false);
 	};
 
 	return (
 		<Box as="section" id="calendar">
-			<Swiper speed={0} initialSlide={1} onSlideChange={slideChangeHandler}>
+			<Swiper initialSlide={1} onSlideChange={slideChangeHandler}>
 				<SwiperSlide>
 					<Sheet selectedDate={subMonths(selectedDate, 1)} />
 				</SwiperSlide>
