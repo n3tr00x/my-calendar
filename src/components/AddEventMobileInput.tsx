@@ -70,9 +70,8 @@ export function AddEventMobileInput() {
 	};
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Backspace' && enteredHour) {
+		if (event.key === 'Backspace' && enteredHour && eventName.length === 0) {
 			setEnteredHour('');
-			setEventName('');
 		}
 
 		if (event.key === 'Enter') {
