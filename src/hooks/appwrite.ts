@@ -2,8 +2,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addMonths, subMonths } from 'date-fns';
 
 import { createAccount, signInAccount, signOutAccount } from '@/lib/appwrite/auth';
-import { addNewEvent, getEvents, getEventsByEventName } from '@/lib/appwrite/crud';
-import { INewAccount, ISignInAccount, NewEvent } from '@/types/appwrite';
+import {
+	addNewEvent,
+	getEvents,
+	getEventsByEventName,
+	removeEvent,
+	updateEvent,
+} from '@/lib/appwrite/crud';
+import { INewAccount, ISignInAccount, NewEvent, NewEventForm } from '@/types/appwrite';
 import { formatDateToMonthYear } from '@/utilities/date';
 
 export function useCreateUserAccount() {
@@ -50,6 +56,34 @@ export function useAddNewEvent() {
 
 	return useMutation({
 		mutationFn: (event: NewEvent) => addNewEvent(event),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['events'] });
+		},
+	});
+}
+
+export function useEditEvent() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({
+			eventId,
+			editedEvent,
+		}: {
+			eventId: string;
+			editedEvent: Partial<NewEventForm>;
+		}) => updateEvent(eventId, editedEvent),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['events'] });
+		},
+	});
+}
+
+export function useRemoveEvent() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (eventId: string) => removeEvent(eventId),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['events'] });
 		},

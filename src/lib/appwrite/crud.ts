@@ -2,7 +2,7 @@ import { ID, Query } from 'appwrite';
 import { addMonths, endOfDay, endOfMonth, startOfDay, startOfMonth, subMonths } from 'date-fns';
 
 import { account, config, databases } from '@/lib/appwrite';
-import { Event, INewUser, NewEvent } from '@/types/appwrite';
+import { Event, INewUser, NewEvent, NewEventForm } from '@/types/appwrite';
 
 export async function saveNewUser(user: INewUser) {
 	return await databases.createDocument(
@@ -50,6 +50,30 @@ export async function addNewEvent(event: NewEvent) {
 		ID.unique(),
 		newEvent,
 	);
+}
+
+export async function updateEvent(eventId: string, updatedEvent: Partial<NewEventForm>) {
+	console.log('update event');
+
+	const editedEvent = {
+		...updatedEvent,
+		...(updatedEvent.startDate && { startDate: startOfDay(updatedEvent.startDate) }),
+		...(updatedEvent.endDate && { endDate: startOfDay(updatedEvent.endDate) }),
+		...(updatedEvent.repeat && { repeat: updatedEvent.repeat[0] }),
+	};
+
+	console.log(editedEvent);
+
+	await databases.updateDocument(
+		config.databaseId,
+		config.eventsCollectionId,
+		eventId,
+		editedEvent,
+	);
+}
+
+export async function removeEvent(eventId: string) {
+	await databases.deleteDocument(config.databaseId, config.eventsCollectionId, eventId);
 }
 
 export async function getEventsByEventName(eventName: string) {

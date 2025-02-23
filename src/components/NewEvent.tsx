@@ -1,14 +1,17 @@
 import { ReactElement, RefAttributes, useEffect, useRef } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, UseFormGetValues } from 'react-hook-form';
 import {
 	ButtonProps,
 	createListCollection,
+	DialogRootProvider,
 	Flex,
 	Input,
-	Spinner,
 	Textarea,
+	useDialog,
+	useDisclosure,
 	VStack,
 } from '@chakra-ui/react';
+import { MenuOpenChangeDetails } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppwriteException } from 'appwrite';
 import { CaseSensitive, MapPin, MoveRight } from 'lucide-react';
@@ -36,12 +39,32 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { toaster } from '@/components/ui/toaster';
-import { useAddNewEvent } from '@/hooks/appwrite';
+import { useAddNewEvent, useEditEvent } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 import { useDate } from '@/hooks/useDate';
 import { NewEventSchema } from '@/schemas/NewEventSchema';
-import { NewEventForm } from '@/types/appwrite';
+import { Event, NewEvent, NewEventForm } from '@/types/appwrite';
 import { addHoursAndResetMinutes, formatDateToYearMonthDay } from '@/utilities/date';
+
+// const dirtyFields: Partial<Readonly<{
+//   title?: boolean | undefined;
+//   isAllDay?: boolean | undefined;
+//   startDate?: boolean | undefined;
+//   endDate?: boolean | undefined;
+//   startTime?: boolean | undefined;
+//   endTime?: boolean | undefined;
+//   description?: boolean | undefined;
+//   location?: boolean | undefined;
+//   repeat?: boolean[] | undefined;
+// }>>
+
+export type DirtyField = {
+	[K in keyof NewEventForm]: K extends 'repeat' ? boolean[] : boolean;
+};
+
+export type DirtyFields = Partial<DirtyField>;
+
+export type NewEventFieldNames = keyof NewEventForm;
 
 const repeatFrequencyCollection = createListCollection({
 	items: [
@@ -58,15 +81,25 @@ const calculateEndTime = (time: string) => {
 	return `${newHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 };
 
+const getEditedFields = (dirtyFields: DirtyFields, getValuesFn: UseFormGetValues<NewEventForm>) => {
+	return Object.keys(dirtyFields).reduce((acc, currentValue) => {
+		const field = currentValue as keyof NewEventForm;
+		return { ...acc, [currentValue]: getValuesFn(field) };
+	}, {} as Partial<NewEventForm>);
+};
+
 type NewEventModalProps = {
+	editedEvent?: Event;
 	dialogTriggerComponent: ReactElement<ButtonProps & RefAttributes<HTMLButtonElement>>;
 };
 
-export function NewEventModal({ dialogTriggerComponent }: NewEventModalProps) {
+export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventModalProps) {
 	console.log('<NewEventModal /> render.');
 	const { date } = useDate();
 	const { user } = useAuth();
+	const { open, onOpen, onClose, setOpen } = useDisclosure();
 	const { mutateAsync: addNewEvent } = useAddNewEvent();
+	const { mutateAsync: editEvent } = useEditEvent();
 	const contentRef = useRef<HTMLDivElement>(null);
 
 	const {
@@ -74,23 +107,41 @@ export function NewEventModal({ dialogTriggerComponent }: NewEventModalProps) {
 		control,
 		watch,
 		handleSubmit,
+		getValues,
 		setValue,
 		reset,
-		formState: { errors, isSubmitting },
+		formState: { errors, dirtyFields },
 	} = useForm<NewEventForm>({
 		resolver: zodResolver(NewEventSchema),
 		defaultValues: {
-			title: '',
-			isAllDay: false,
-			startDate: formatDateToYearMonthDay(date),
-			endDate: formatDateToYearMonthDay(date),
-			startTime: addHoursAndResetMinutes(date),
-			endTime: addHoursAndResetMinutes(date, 2),
-			location: null,
-			description: null,
-			repeat: ['no-repeat'],
+			title: editedEvent ? editedEvent.title : '',
+			isAllDay: editedEvent ? editedEvent.isAllDay : false,
+			startDate: editedEvent ? editedEvent.startDate : formatDateToYearMonthDay(date),
+			endDate: editedEvent ? editedEvent.endDate : formatDateToYearMonthDay(date),
+			startTime: editedEvent ? editedEvent.startTime : addHoursAndResetMinutes(date),
+			endTime: editedEvent ? editedEvent.endTime : addHoursAndResetMinutes(date, 2),
+			location: editedEvent ? editedEvent.location : null,
+			description: editedEvent ? editedEvent.description : null,
+			repeat: editedEvent ? [editedEvent.repeat] : ['no-repeat'],
 		},
 	});
+
+	const toggleEventFormHandler = ({ open }: MenuOpenChangeDetails) => {
+		setOpen(open);
+		if (open && editedEvent) {
+			reset({
+				title: editedEvent.title,
+				isAllDay: editedEvent.isAllDay,
+				startDate: formatDateToYearMonthDay(editedEvent.startDate),
+				endDate: formatDateToYearMonthDay(editedEvent.endDate),
+				startTime: editedEvent.startTime,
+				endTime: editedEvent.endTime,
+				location: editedEvent.location,
+				description: editedEvent.description,
+				repeat: [editedEvent.repeat],
+			});
+		}
+	};
 
 	const isAllDaySelected = watch('isAllDay');
 	const startTime = watch('startTime');
@@ -105,10 +156,10 @@ export function NewEventModal({ dialogTriggerComponent }: NewEventModalProps) {
 			setValue('startTime', null);
 			setValue('endTime', null);
 		} else {
-			setValue('startTime', addHoursAndResetMinutes(date, 1));
-			setValue('endTime', addHoursAndResetMinutes(date, 2));
+			setValue('startTime', editedEvent ? editedEvent.startTime : addHoursAndResetMinutes(date));
+			setValue('endTime', editedEvent ? editedEvent.endTime : addHoursAndResetMinutes(date, 2));
 		}
-	}, [isAllDaySelected, setValue, date]);
+	}, [isAllDaySelected, setValue, date, editedEvent]);
 
 	useEffect(() => {
 		if (startTime) {
@@ -117,9 +168,39 @@ export function NewEventModal({ dialogTriggerComponent }: NewEventModalProps) {
 		}
 	}, [startTime, setValue]);
 
-	const submitHandler = async (event: NewEventForm) => {
+	const editEventHandler = async () => {
+		onClose();
+		const modifiedFields = getEditedFields(dirtyFields, getValues);
 		try {
-			const newEvent = {
+			if (editedEvent) {
+				await editEvent({ eventId: editedEvent.$id, editedEvent: modifiedFields });
+
+				return toaster.create({
+					title: 'The event has been edited correctly!',
+					type: 'success',
+					placement: 'bottom-end',
+					duration: 4000,
+				});
+			}
+		} catch (error) {
+			if (error instanceof AppwriteException) {
+				return toaster.create({
+					title: 'An edit event problem',
+					type: 'error',
+					description: error?.message,
+					placement: 'bottom-end',
+					duration: 4000,
+				});
+			}
+		} finally {
+			reset();
+		}
+	};
+
+	const submitHandler = async (event: NewEventForm) => {
+		onClose();
+		try {
+			const newEvent: NewEvent = {
 				...event,
 				user: user?.$id,
 				accountId: user?.accountId,
@@ -149,13 +230,15 @@ export function NewEventModal({ dialogTriggerComponent }: NewEventModalProps) {
 	};
 
 	return (
-		<DialogRoot size="xs">
-			<DialogTrigger asChild>{dialogTriggerComponent}</DialogTrigger>
-			<DialogContent ref={contentRef}>
-				<form onSubmit={handleSubmit(submitHandler)}>
+		<DialogRoot size="xs" open={open} onOpenChange={toggleEventFormHandler}>
+			<DialogTrigger asChild onClick={onOpen}>
+				{dialogTriggerComponent}
+			</DialogTrigger>
+			<DialogContent ref={contentRef} zIndex={999}>
+				<form onSubmit={editedEvent ? handleSubmit(editEventHandler) : handleSubmit(submitHandler)}>
 					<DialogHeader>
 						<DialogTitle textAlign="center" fontFamily="heading">
-							Add new event
+							{editedEvent ? 'Edit your event' : 'Add new event'}
 						</DialogTitle>
 					</DialogHeader>
 					<DialogBody>
@@ -237,10 +320,17 @@ export function NewEventModal({ dialogTriggerComponent }: NewEventModalProps) {
 					</DialogBody>
 					<DialogFooter>
 						<DialogActionTrigger asChild>
-							<Button variant="outline">Cancel</Button>
+							<Button variant="outline" onClick={event => event.stopPropagation()}>
+								Cancel
+							</Button>
 						</DialogActionTrigger>
-						<Button type="submit" colorPalette="blue" minWidth={16}>
-							{isSubmitting ? <Spinner colorPalette="blue" size="sm" /> : 'Add'}
+						<Button
+							type="submit"
+							colorPalette="blue"
+							minWidth={16}
+							onClick={event => event.stopPropagation()}
+						>
+							{editedEvent ? 'Edit' : 'Add'}
 						</Button>
 					</DialogFooter>
 					<DialogCloseTrigger />

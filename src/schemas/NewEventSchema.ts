@@ -24,8 +24,14 @@ export const NewEventSchema = z
 		isAllDay: z.boolean(),
 		startDate: z.string().date(),
 		endDate: z.string().date(),
-		startTime: z.string().time().nullable(),
-		endTime: z.string().time().nullable(),
+		startTime: z
+			.string()
+			.regex(/^([01]\d|2[0-3]):([0-5]\d)$/)
+			.nullable(),
+		endTime: z
+			.string()
+			.regex(/^([01]\d|2[0-3]):([0-5]\d)$/)
+			.nullable(),
 		description: z.string().nullable(),
 		location: z.string().nullable(),
 		repeat: z.array(z.enum(['no-repeat', 'daily', 'weekly', 'monthly'])),
