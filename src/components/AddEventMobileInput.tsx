@@ -6,11 +6,9 @@ import { InputGroup } from '@/components/ui/input-group';
 import { toaster } from '@/components/ui/toaster';
 import { useAddNewEvent } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
-import { useDate } from '@/hooks/useDate';
+import { useSelectedDate } from '@/store/date';
 import { NewEvent } from '@/types/appwrite';
 import { formatDateToYearMonthDay, formatShortDate } from '@/utilities/date';
-
-// export const NewEventSchema = z.string();
 
 function isValidTimeFormat(time: string) {
 	const regex = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -24,11 +22,11 @@ function addOneHour(time: string) {
 }
 
 export function AddEventMobileInput() {
-	const { date } = useDate();
 	const { user } = useAuth();
+	const selectedDate = useSelectedDate();
 	const [eventName, setEventName] = useState('');
 	const [enteredHour, setEnteredHour] = useState('');
-	const { mutateAsync: addNewEvent } = useAddNewEvent();
+	const { mutateAsync: addNewEvent } = useAddNewEvent(selectedDate);
 
 	const addEventInputSubmitHandler = async () => {
 		const newEvent: NewEvent = {
@@ -37,8 +35,8 @@ export function AddEventMobileInput() {
 			title: eventName,
 			description: null,
 			isAllDay: enteredHour ? false : true,
-			startDate: formatDateToYearMonthDay(date),
-			endDate: formatDateToYearMonthDay(date),
+			startDate: formatDateToYearMonthDay(selectedDate),
+			endDate: formatDateToYearMonthDay(selectedDate),
 			startTime: enteredHour ? enteredHour : null,
 			endTime: enteredHour ? addOneHour(enteredHour) : null,
 			location: null,
@@ -95,7 +93,7 @@ export function AddEventMobileInput() {
 				value={eventName}
 				onChange={addEventInputChangeHandler}
 				onKeyDown={handleKeyDown}
-				placeholder={`Add event on ${formatShortDate(date)}`}
+				placeholder={`Add event on ${formatShortDate(selectedDate)}`}
 				rounded="full"
 			/>
 		</InputGroup>

@@ -12,7 +12,7 @@ import {
 	DialogHeader,
 	DialogRoot,
 } from '@/components/ui/dialog';
-import { useDate } from '@/hooks/useDate';
+import { useSelectedDate, useUpdateSelectedDate } from '@/store/date';
 
 type YearPickerModalProps = {
 	isOpen: boolean;
@@ -41,7 +41,7 @@ const generateTwelveYears = (date: Date) => {
 export function YearPickerModal({ isOpen, onClose }: YearPickerModalProps) {
 	console.log('<YearPickerModal /> render.');
 
-	const { date: currentSelectedDate } = useDate();
+	const currentSelectedDate = useSelectedDate();
 	const [mode, setMode] = useState<'month' | 'year'>('month');
 	const [date, setDate] = useState(currentSelectedDate);
 	const years = generateTwelveYears(date);
@@ -123,10 +123,11 @@ type MonthPickerProps = {
 };
 
 function MonthPicker({ mode, years, date, onSetMode, onSetDate, onClose }: MonthPickerProps) {
-	const { date: selectedDate, onDateChange } = useDate();
+	const selectedDate = useSelectedDate();
+	const updateSelectedDate = useUpdateSelectedDate();
 
 	const setMonthHandler = (index: number) => {
-		onDateChange(setMonth(date, index));
+		updateSelectedDate(setMonth(date, index));
 		onClose();
 	};
 

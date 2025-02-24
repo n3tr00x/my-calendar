@@ -4,13 +4,13 @@ import { isWithinInterval } from 'date-fns';
 import { EmptyEventList } from '@/components/EmptyEventList';
 import { EventList } from '@/components/EventList';
 import { useEvents } from '@/hooks/appwrite';
-import { useDate } from '@/hooks/useDate';
+import { useSelectedDate } from '@/store/date';
 import { formatShortDate } from '@/utilities/date';
 
 export function Events() {
 	console.log('<EventList /> render.');
 
-	const { date: selectedDate } = useDate();
+	const selectedDate = useSelectedDate();
 	const { data: events, isLoading: isEventLoading } = useEvents(selectedDate);
 
 	if (isEventLoading) {

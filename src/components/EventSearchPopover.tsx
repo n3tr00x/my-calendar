@@ -13,8 +13,8 @@ import {
 	PopoverTrigger,
 } from '@/components/ui/popover';
 import { useSearchedEvents } from '@/hooks/appwrite';
-import { useDate } from '@/hooks/useDate';
 import useDebounce from '@/hooks/useDebounce';
+import { useUpdateSelectedDate } from '@/store/date';
 import { formatDateToYearMonthDay } from '@/utilities/date';
 
 type EventSearchPopoverProps = {
@@ -22,7 +22,7 @@ type EventSearchPopoverProps = {
 };
 
 export function EventSearchPopover({ popoverTriggerComponent }: EventSearchPopoverProps) {
-	const { onDateChange } = useDate();
+	const updateSelectedDate = useUpdateSelectedDate();
 	const [searchTerm, setSearchTerm] = useState('');
 	const debouncedEventTitleValue = useDebounce(searchTerm, 500);
 	const { data: events, isLoading } = useSearchedEvents(debouncedEventTitleValue);
@@ -58,7 +58,7 @@ export function EventSearchPopover({ popoverTriggerComponent }: EventSearchPopov
 										// _hover={{ opacity: '0.8', transition: 'ease-out .3s' }}
 										onClick={e => {
 											e.stopPropagation();
-											onDateChange(new Date(event.startDate));
+											updateSelectedDate(new Date(event.startDate));
 										}}
 									>
 										<Text color="gray.500">

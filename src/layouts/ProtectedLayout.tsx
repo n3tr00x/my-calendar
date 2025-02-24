@@ -3,7 +3,6 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { Flex } from '@chakra-ui/react';
 
 import { Topbar } from '@/components/Topbar';
-import { DateContextProvider } from '@/contexts/DateContext';
 import { useAuth } from '@/hooks/useAuth';
 
 export function ProtectedLayout() {
@@ -27,11 +26,9 @@ export function ProtectedLayout() {
 	}
 
 	return (
-		<DateContextProvider>
-			<Flex h="100vh" direction="column">
-				<Topbar />
-				<Outlet />
-			</Flex>
-		</DateContextProvider>
+		<Flex h="100vh" direction="column">
+			<Topbar />
+			<Outlet />
+		</Flex>
 	);
 }

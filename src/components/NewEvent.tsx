@@ -39,8 +39,8 @@ import { Switch } from '@/components/ui/switch';
 import { toaster } from '@/components/ui/toaster';
 import { useAddNewEvent, useEditEvent } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
-import { useDate } from '@/hooks/useDate';
 import { NewEventSchema } from '@/schemas/NewEventSchema';
+import { useSelectedDate } from '@/store/date';
 import { Event, NewEvent, NewEventForm } from '@/types/appwrite';
 import { addHoursAndResetMinutes, formatDateToYearMonthDay } from '@/utilities/date';
 
@@ -81,11 +81,11 @@ type NewEventModalProps = {
 
 export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventModalProps) {
 	console.log('<NewEventModal /> render.');
-	const { date } = useDate();
+	const selectedDate = useSelectedDate();
 	const { user } = useAuth();
 	const { open, onOpen, onClose, setOpen } = useDisclosure();
-	const { mutateAsync: addNewEvent } = useAddNewEvent(date);
-	const { mutateAsync: editEvent } = useEditEvent(date);
+	const { mutateAsync: addNewEvent } = useAddNewEvent(selectedDate);
+	const { mutateAsync: editEvent } = useEditEvent(selectedDate);
 	const contentRef = useRef<HTMLDivElement>(null);
 
 	const {
@@ -102,10 +102,10 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 		defaultValues: {
 			title: editedEvent ? editedEvent.title : '',
 			isAllDay: editedEvent ? editedEvent.isAllDay : false,
-			startDate: editedEvent ? editedEvent.startDate : formatDateToYearMonthDay(date),
-			endDate: editedEvent ? editedEvent.endDate : formatDateToYearMonthDay(date),
-			startTime: editedEvent ? editedEvent.startTime : addHoursAndResetMinutes(date),
-			endTime: editedEvent ? editedEvent.endTime : addHoursAndResetMinutes(date, 2),
+			startDate: editedEvent ? editedEvent.startDate : formatDateToYearMonthDay(selectedDate),
+			endDate: editedEvent ? editedEvent.endDate : formatDateToYearMonthDay(selectedDate),
+			startTime: editedEvent ? editedEvent.startTime : addHoursAndResetMinutes(selectedDate),
+			endTime: editedEvent ? editedEvent.endTime : addHoursAndResetMinutes(selectedDate, 2),
 			location: editedEvent ? editedEvent.location : null,
 			description: editedEvent ? editedEvent.description : null,
 			repeat: editedEvent ? [editedEvent.repeat] : ['no-repeat'],
@@ -133,19 +133,25 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 	const startTime = watch('startTime');
 
 	useEffect(() => {
-		setValue('startDate', formatDateToYearMonthDay(date));
-		setValue('endDate', formatDateToYearMonthDay(date));
-	}, [date, setValue]);
+		setValue('startDate', formatDateToYearMonthDay(selectedDate));
+		setValue('endDate', formatDateToYearMonthDay(selectedDate));
+	}, [selectedDate, setValue]);
 
 	useEffect(() => {
 		if (isAllDaySelected) {
 			setValue('startTime', null);
 			setValue('endTime', null);
 		} else {
-			setValue('startTime', editedEvent ? editedEvent.startTime : addHoursAndResetMinutes(date));
-			setValue('endTime', editedEvent ? editedEvent.endTime : addHoursAndResetMinutes(date, 2));
+			setValue(
+				'startTime',
+				editedEvent ? editedEvent.startTime : addHoursAndResetMinutes(selectedDate),
+			);
+			setValue(
+				'endTime',
+				editedEvent ? editedEvent.endTime : addHoursAndResetMinutes(selectedDate, 2),
+			);
 		}
-	}, [isAllDaySelected, setValue, date, editedEvent]);
+	}, [isAllDaySelected, setValue, selectedDate, editedEvent]);
 
 	useEffect(() => {
 		if (startTime) {

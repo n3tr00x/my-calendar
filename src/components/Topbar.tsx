@@ -5,11 +5,11 @@ import { EventSearchPopover } from '@/components/EventSearchPopover';
 import { MonthNavigator } from '@/components/MonthNavigator';
 import { Sidebar } from '@/components/Sidebar';
 import { Button } from '@/components/ui/button';
-import { useDate } from '@/hooks/useDate';
+import { useUpdateSelectedDate } from '@/store/date';
 
 export function Topbar() {
 	const today = new Date();
-	const { onDateChange } = useDate();
+	const updateSelectedDate = useUpdateSelectedDate();
 
 	return (
 		<Box as="header" p={4}>
@@ -34,7 +34,12 @@ export function Topbar() {
 							/>
 						</li>
 						<li style={{ marginLeft: 'auto' }}>
-							<Button variant="outline" size="xs" rounded="sm" onClick={() => onDateChange(today)}>
+							<Button
+								variant="outline"
+								size="xs"
+								rounded="sm"
+								onClick={() => updateSelectedDate(today)}
+							>
 								<Box>{today.getDate()}</Box>
 							</Button>
 						</li>

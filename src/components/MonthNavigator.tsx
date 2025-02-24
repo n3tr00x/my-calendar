@@ -4,21 +4,22 @@ import { addMonths, format, startOfMonth, subMonths } from 'date-fns';
 import { ChevronLeftIcon } from '@/components/icons/ChevronLeftIcon';
 import { ChevronRightIcon } from '@/components/icons/ChevronRightIcon';
 import { YearPickerModal } from '@/components/YearPicker';
-import { useDate } from '@/hooks/useDate';
+import { useSelectedDate, useUpdateSelectedDate } from '@/store/date';
 
 export function MonthNavigator() {
 	console.log('<MonthNavigator /> render');
-	const { date, onDateChange } = useDate();
+	const selectedDate = useSelectedDate();
+	const updateSelectedDate = useUpdateSelectedDate();
 	const { open, onOpen, onClose } = useDisclosure();
 
 	const setPreviousMonth = () => {
-		const previousMonth = startOfMonth(subMonths(date, 1));
-		onDateChange(previousMonth);
+		const previousMonth = startOfMonth(subMonths(selectedDate, 1));
+		updateSelectedDate(previousMonth);
 	};
 
 	const setNextMonth = () => {
-		const nextMonth = startOfMonth(addMonths(date, 1));
-		onDateChange(nextMonth);
+		const nextMonth = startOfMonth(addMonths(selectedDate, 1));
+		updateSelectedDate(nextMonth);
 	};
 
 	return (
@@ -29,7 +30,7 @@ export function MonthNavigator() {
 					<ChevronLeftIcon />
 				</Button>
 				<Button textAlign="center" size="xs" colorPalette="blue" variant="outline" onClick={onOpen}>
-					{format(date, 'MMM').toUpperCase()} {date.getFullYear()}
+					{format(selectedDate, 'MMM').toUpperCase()} {selectedDate.getFullYear()}
 				</Button>
 				<Button onClick={setNextMonth} size="xs" variant="plain">
 					<ChevronRightIcon />

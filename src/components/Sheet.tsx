@@ -16,7 +16,7 @@ import {
 
 import { EventPlaceholder } from '@/components/EventPlaceholder';
 import { useEvents } from '@/hooks/appwrite';
-import { useDate } from '@/hooks/useDate';
+import { useUpdateSelectedDate } from '@/store/date';
 
 const WEEK_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
@@ -33,7 +33,7 @@ const generateCalendarSheet = (date: Date) => {
 };
 
 export function Sheet({ selectedDate }: { selectedDate: Date }) {
-	const { onDateChange } = useDate();
+	const updateSelectedDate = useUpdateSelectedDate();
 	const { data: events, isLoading } = useEvents(selectedDate);
 
 	const sheet = generateCalendarSheet(startOfMonth(selectedDate));
@@ -68,7 +68,7 @@ export function Sheet({ selectedDate }: { selectedDate: Date }) {
 						textAlign="center"
 						fontSize="xs"
 						onClick={() => {
-							onDateChange(setHours(date, new Date().getHours()));
+							updateSelectedDate(setHours(date, new Date().getHours()));
 						}}
 						cursor="pointer"
 					>

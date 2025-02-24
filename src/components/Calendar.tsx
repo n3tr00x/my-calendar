@@ -4,22 +4,23 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as TSwiper } from 'swiper/types';
 
 import { Sheet } from '@/components/Sheet';
-import { useDate } from '@/hooks/useDate';
+import { useSelectedDate, useUpdateSelectedDate } from '@/store/date';
 import { getStartOfNextMonth, getStartOfPreviousMonth } from '@/utilities/date';
 
 import 'swiper/css';
 
 export function Calendar() {
 	console.log('<Calendar /> render.');
-	const { date: selectedDate, onDateChange } = useDate();
+	const selectedDate = useSelectedDate();
+	const updateSelectedDate = useUpdateSelectedDate();
 
 	const slideChangeHandler = (swiper: TSwiper) => {
 		const activeIndex = swiper.activeIndex;
 
 		if (activeIndex === 0) {
-			onDateChange(prevDate => getStartOfPreviousMonth(prevDate));
+			updateSelectedDate(getStartOfPreviousMonth(selectedDate));
 		} else if (activeIndex === 2) {
-			onDateChange(prevDate => getStartOfNextMonth(prevDate));
+			updateSelectedDate(getStartOfNextMonth(selectedDate));
 		}
 
 		swiper.slideTo(1, 0, false);
