@@ -3,11 +3,9 @@ import { Controller, useForm, UseFormGetValues } from 'react-hook-form';
 import {
 	ButtonProps,
 	createListCollection,
-	DialogRootProvider,
 	Flex,
 	Input,
 	Textarea,
-	useDialog,
 	useDisclosure,
 	VStack,
 } from '@chakra-ui/react';
@@ -45,18 +43,6 @@ import { useDate } from '@/hooks/useDate';
 import { NewEventSchema } from '@/schemas/NewEventSchema';
 import { Event, NewEvent, NewEventForm } from '@/types/appwrite';
 import { addHoursAndResetMinutes, formatDateToYearMonthDay } from '@/utilities/date';
-
-// const dirtyFields: Partial<Readonly<{
-//   title?: boolean | undefined;
-//   isAllDay?: boolean | undefined;
-//   startDate?: boolean | undefined;
-//   endDate?: boolean | undefined;
-//   startTime?: boolean | undefined;
-//   endTime?: boolean | undefined;
-//   description?: boolean | undefined;
-//   location?: boolean | undefined;
-//   repeat?: boolean[] | undefined;
-// }>>
 
 export type DirtyField = {
 	[K in keyof NewEventForm]: K extends 'repeat' ? boolean[] : boolean;
@@ -98,8 +84,8 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 	const { date } = useDate();
 	const { user } = useAuth();
 	const { open, onOpen, onClose, setOpen } = useDisclosure();
-	const { mutateAsync: addNewEvent } = useAddNewEvent();
-	const { mutateAsync: editEvent } = useEditEvent();
+	const { mutateAsync: addNewEvent } = useAddNewEvent(date);
+	const { mutateAsync: editEvent } = useEditEvent(date);
 	const contentRef = useRef<HTMLDivElement>(null);
 
 	const {

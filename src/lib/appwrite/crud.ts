@@ -1,5 +1,5 @@
 import { ID, Query } from 'appwrite';
-import { addMonths, endOfDay, endOfMonth, startOfDay, startOfMonth, subMonths } from 'date-fns';
+import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek } from 'date-fns';
 
 import { account, config, databases } from '@/lib/appwrite';
 import { Event, INewUser, NewEvent, NewEventForm } from '@/types/appwrite';
@@ -14,10 +14,8 @@ export async function saveNewUser(user: INewUser) {
 }
 
 export async function getEvents(date: Date) {
-	const prevMonth = subMonths(date, 1);
-	const nextMonth = addMonths(date, 1);
-	const minDate = startOfMonth(prevMonth);
-	const maxDate = endOfMonth(nextMonth);
+	const minDate = startOfWeek(startOfMonth(date));
+	const maxDate = endOfWeek(endOfMonth(date));
 
 	const currentAccount = await account.get();
 
@@ -61,8 +59,6 @@ export async function updateEvent(eventId: string, updatedEvent: Partial<NewEven
 		...(updatedEvent.endDate && { endDate: startOfDay(updatedEvent.endDate) }),
 		...(updatedEvent.repeat && { repeat: updatedEvent.repeat[0] }),
 	};
-
-	console.log(editedEvent);
 
 	await databases.updateDocument(
 		config.databaseId,

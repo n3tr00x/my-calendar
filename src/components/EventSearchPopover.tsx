@@ -30,7 +30,7 @@ export function EventSearchPopover({ popoverTriggerComponent }: EventSearchPopov
 	return (
 		<PopoverRoot>
 			<PopoverTrigger asChild>{popoverTriggerComponent}</PopoverTrigger>
-			<PopoverContent>
+			<PopoverContent zIndex={99}>
 				<PopoverArrow />
 				<PopoverBody>
 					<Stack gap="4">

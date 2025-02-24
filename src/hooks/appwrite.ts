@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addMonths, subMonths } from 'date-fns';
 
+import {
+	EVENTS_QUERY_KEY,
+	EVENTS_RANGE_QUERY_KEY,
+	EVENTS_SEARCH_QUERY_KEY,
+} from '@/constants/appwrite';
 import { createAccount, signInAccount, signOutAccount } from '@/lib/appwrite/auth';
 import {
 	addNewEvent,
@@ -10,7 +14,7 @@ import {
 	updateEvent,
 } from '@/lib/appwrite/crud';
 import { INewAccount, ISignInAccount, NewEvent, NewEventForm } from '@/types/appwrite';
-import { formatDateToMonthYear } from '@/utilities/date';
+import { generateEventsQueryKey } from '@/utilities/appwrite';
 
 export function useCreateUserAccount() {
 	return useMutation({
@@ -31,12 +35,10 @@ export function useSignOutAccount() {
 }
 
 export function useEvents(date: Date) {
-	const formattedDate = formatDateToMonthYear(date);
-	const prevMonthDate = formatDateToMonthYear(subMonths(date, 1));
-	const nextMonthDate = formatDateToMonthYear(addMonths(date, 1));
+	const EVENTS_DATE_QUERY_KEY = generateEventsQueryKey(date);
 
 	return useQuery({
-		queryKey: ['events', prevMonthDate, formattedDate, nextMonthDate],
+		queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY, EVENTS_DATE_QUERY_KEY],
 		queryFn: () => getEvents(date),
 		staleTime: Infinity,
 		gcTime: 1000 * 60 * 60, // 1h,
@@ -45,25 +47,29 @@ export function useEvents(date: Date) {
 
 export function useSearchedEvents(eventName: string) {
 	return useQuery({
-		queryKey: ['events', 'search', eventName],
+		queryKey: [EVENTS_QUERY_KEY, EVENTS_SEARCH_QUERY_KEY, eventName],
 		queryFn: () => getEventsByEventName(eventName),
 		enabled: !!eventName,
 	});
 }
 
-export function useAddNewEvent() {
+export function useAddNewEvent(date: Date) {
 	const queryClient = useQueryClient();
+	const EVENTS_DATE_QUERY_KEY = generateEventsQueryKey(date);
 
 	return useMutation({
 		mutationFn: (event: NewEvent) => addNewEvent(event),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['events'] });
+			queryClient.invalidateQueries({
+				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY, EVENTS_DATE_QUERY_KEY],
+			});
 		},
 	});
 }
 
-export function useEditEvent() {
+export function useEditEvent(date: Date) {
 	const queryClient = useQueryClient();
+	const EVENTS_DATE_QUERY_KEY = generateEventsQueryKey(date);
 
 	return useMutation({
 		mutationFn: ({
@@ -74,18 +80,23 @@ export function useEditEvent() {
 			editedEvent: Partial<NewEventForm>;
 		}) => updateEvent(eventId, editedEvent),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['events'] });
+			queryClient.invalidateQueries({
+				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY, EVENTS_DATE_QUERY_KEY],
+			});
 		},
 	});
 }
 
-export function useRemoveEvent() {
+export function useRemoveEvent(date: Date) {
 	const queryClient = useQueryClient();
+	const EVENTS_DATE_QUERY_KEY = generateEventsQueryKey(date);
 
 	return useMutation({
 		mutationFn: (eventId: string) => removeEvent(eventId),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['events'] });
+			queryClient.invalidateQueries({
+				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY, EVENTS_DATE_QUERY_KEY],
+			});
 		},
 	});
 }
