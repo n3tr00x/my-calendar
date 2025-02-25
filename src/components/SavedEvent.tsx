@@ -66,11 +66,13 @@ export function SavedEvent({ event, savedEventStyles }: SavedEventProps) {
 							<Trash />
 						</Button>
 					}
+					title="Delete event"
 					description={
 						<Highlight query={event.title} styles={{ fontWeight: 'semibold' }}>
-							{`You are going to remove ${event.title} event.`}
+							{`Are you sure you want to delete ${event.title} event? This action cannot be undone.`}
 						</Highlight>
 					}
+					actionButtonLabel="Delete"
 					action={removeEventHandler}
 				/>
 			</Flex>

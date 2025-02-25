@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Box, Flex, Image, Text } from '@chakra-ui/react';
-import { LogOut, Menu, Plus } from 'lucide-react';
+import { LogOut, Menu, Plus, Search } from 'lucide-react';
 
 import logo from '@/assets/logo.png';
+import { AlertDialog } from '@/components/AlertDialog';
 import { NewEventModal } from '@/components/NewEvent';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ import {
 	DrawerRoot,
 	DrawerTrigger,
 } from '@/components/ui/drawer';
+import { toaster } from '@/components/ui/toaster';
 import { useSignOutAccount } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -26,13 +28,16 @@ export function Sidebar() {
 	const navigate = useNavigate();
 
 	const signOutHandler = async () => {
-		const proceed = window.confirm('Are you sure you want to log out?');
+		await signOut();
+		removeAuthentication();
+		navigate('/sign-in', { replace: true });
 
-		if (proceed) {
-			await signOut();
-			removeAuthentication();
-			navigate('/sign-in', { replace: true });
-		}
+		toaster.create({
+			title: 'You have been logged out successfully.',
+			type: 'success',
+			placement: 'bottom-end',
+			duration: 4000,
+		});
 	};
 
 	return (
@@ -46,12 +51,12 @@ export function Sidebar() {
 			<DrawerContent>
 				<DrawerCloseTrigger />
 				<DrawerHeader fontFamily="heading" fontSize="lg">
-					<Flex alignItems="center" gap={2}>
+					<Flex alignItems="center" gap={2} justifyContent="center">
 						<Image src={logo} alt="logo" width="32px" aspectRatio="square" />
 						My Calendar
 					</Flex>
 				</DrawerHeader>
-				<DrawerBody>
+				<DrawerBody display="flex" flexDirection="column" gap={4}>
 					<NewEventModal
 						dialogTriggerComponent={
 							<Button variant="outline" colorPalette="blue" w="full" justifyContent="flex-start">
@@ -59,6 +64,9 @@ export function Sidebar() {
 							</Button>
 						}
 					/>
+					<Button variant="outline" colorPalette="blue" w="full" justifyContent="flex-start">
+						<Search /> Search events
+					</Button>
 				</DrawerBody>
 				<DrawerFooter justifyContent="space-between">
 					<Box p={1}>
@@ -71,9 +79,17 @@ export function Sidebar() {
 					</Box>
 					<Box>
 						<ColorModeButton px={4} minH={10} />
-						<Button variant="ghost" onClick={signOutHandler}>
-							<LogOut />
-						</Button>
+						<AlertDialog
+							alertTriggerComponent={
+								<Button variant="ghost">
+									<LogOut />
+								</Button>
+							}
+							action={signOutHandler}
+							actionButtonLabel="Log out"
+							title="Leaving your account"
+							description="Your session will be ended. Do you want to continue?"
+						/>
 					</Box>
 				</DrawerFooter>
 			</DrawerContent>

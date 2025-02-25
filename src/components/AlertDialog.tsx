@@ -15,21 +15,25 @@ import {
 
 type EventSearchPopoverProps = {
 	alertTriggerComponent: ReactElement<ButtonProps & RefAttributes<HTMLButtonElement>>;
+	title: string | JSX.Element;
 	description: string | JSX.Element;
 	action: () => void;
+	actionButtonLabel: string;
 };
 
 export function AlertDialog({
 	alertTriggerComponent,
+	title,
 	description,
 	action,
+	actionButtonLabel,
 }: EventSearchPopoverProps) {
 	return (
 		<DialogRoot role="alertdialog" placement="bottom" closeOnInteractOutside>
 			<DialogTrigger asChild>{alertTriggerComponent}</DialogTrigger>
 			<DialogContent mx={{ base: 2, sm: 0 }}>
 				<DialogHeader>
-					<DialogTitle>Are you sure?</DialogTitle>
+					<DialogTitle>{title}</DialogTitle>
 				</DialogHeader>
 				<DialogBody>{description}</DialogBody>
 				<DialogFooter>
@@ -37,7 +41,7 @@ export function AlertDialog({
 						<Button variant="outline">Cancel</Button>
 					</DialogActionTrigger>
 					<Button colorPalette="red" onClick={action}>
-						Delete
+						{actionButtonLabel}
 					</Button>
 				</DialogFooter>
 				<DialogCloseTrigger />
