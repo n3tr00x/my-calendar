@@ -8,9 +8,14 @@ import eslintPluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 
 export default tseslint.config(
-	{ ignores: ['dist'] },
+	{ ignores: ['dist', 'src/components/ui'] },
 	{
-		extends: [js.configs.recommended, ...tseslint.configs.recommended, prettier, eslintPluginPrettier],
+		extends: [
+			js.configs.recommended,
+			...tseslint.configs.recommended,
+			prettier,
+			eslintPluginPrettier,
+		],
 		files: ['**/*.{ts,tsx}'],
 		languageOptions: {
 			ecmaVersion: 2020,
