@@ -37,8 +37,8 @@ export async function getEvents(date: Date) {
 export async function addNewEvent(event: NewEvent) {
 	const newEvent = {
 		...event,
-		startDate: startOfDay(event.startDate),
-		endDate: endOfDay(event.endDate),
+		startDate: startOfDay(event.startDate).toISOString(),
+		endDate: endOfDay(event.endDate).toISOString(),
 		repeat: event.repeat[0],
 	};
 

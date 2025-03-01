@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
 	EVENTS_QUERY_KEY,
@@ -53,23 +53,21 @@ export function useSearchedEvents(eventName: string) {
 	});
 }
 
-export function useAddNewEvent(date: Date) {
+export function useAddNewEvent() {
 	const queryClient = useQueryClient();
-	const EVENTS_DATE_QUERY_KEY = generateEventsQueryKey(date);
 
 	return useMutation({
 		mutationFn: (event: NewEvent) => addNewEvent(event),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY, EVENTS_DATE_QUERY_KEY],
+				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY],
 			});
 		},
 	});
 }
 
-export function useEditEvent(date: Date) {
+export function useEditEvent() {
 	const queryClient = useQueryClient();
-	const EVENTS_DATE_QUERY_KEY = generateEventsQueryKey(date);
 
 	return useMutation({
 		mutationFn: ({
@@ -81,21 +79,20 @@ export function useEditEvent(date: Date) {
 		}) => updateEvent(eventId, editedEvent),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY, EVENTS_DATE_QUERY_KEY],
+				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY],
 			});
 		},
 	});
 }
 
-export function useRemoveEvent(date: Date) {
+export function useRemoveEvent() {
 	const queryClient = useQueryClient();
-	const EVENTS_DATE_QUERY_KEY = generateEventsQueryKey(date);
 
 	return useMutation({
 		mutationFn: (eventId: string) => removeEvent(eventId),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY, EVENTS_DATE_QUERY_KEY],
+				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY],
 			});
 		},
 	});

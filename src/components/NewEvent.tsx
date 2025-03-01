@@ -84,8 +84,8 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 	const selectedDate = useSelectedDate();
 	const { user } = useAuth();
 	const { open, onOpen, onClose, setOpen } = useDisclosure();
-	const { mutateAsync: addNewEvent } = useAddNewEvent(selectedDate);
-	const { mutateAsync: editEvent } = useEditEvent(selectedDate);
+	const { mutateAsync: addNewEvent } = useAddNewEvent();
+	const { mutateAsync: editEvent } = useEditEvent();
 	const contentRef = useRef<HTMLDivElement>(null);
 
 	const {

@@ -7,7 +7,6 @@ import { AlertDialog } from '@/components/AlertDialog';
 import { NewEventModal } from '@/components/NewEvent';
 import { toaster } from '@/components/ui/toaster';
 import { useRemoveEvent } from '@/hooks/appwrite';
-import { useSelectedDate } from '@/store/date';
 import { Event } from '@/types/appwrite';
 
 type SavedEventProps = {
@@ -17,8 +16,7 @@ type SavedEventProps = {
 
 export function SavedEvent({ event, savedEventStyles }: SavedEventProps) {
 	console.log('<SavedEvent /> render.');
-	const selectedDate = useSelectedDate();
-	const { mutateAsync: removeEvent } = useRemoveEvent(selectedDate);
+	const { mutateAsync: removeEvent } = useRemoveEvent();
 
 	const removeEventHandler = () => {
 		toaster.promise(removeEvent(event.$id), {

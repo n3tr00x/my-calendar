@@ -26,7 +26,7 @@ export function AddEventMobileInput() {
 	const selectedDate = useSelectedDate();
 	const [eventName, setEventName] = useState('');
 	const [enteredHour, setEnteredHour] = useState('');
-	const { mutateAsync: addNewEvent } = useAddNewEvent(selectedDate);
+	const { mutateAsync: addNewEvent } = useAddNewEvent();
 
 	const addEventInputSubmitHandler = async () => {
 		const newEvent: NewEvent = {
