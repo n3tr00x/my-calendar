@@ -12,27 +12,13 @@ import {
 	DialogHeader,
 	DialogRoot,
 } from '@/components/ui/dialog';
+import { MONTHS } from '@/constants/date';
 import { useSelectedDate, useUpdateSelectedDate } from '@/store/date';
 
 type YearPickerModalProps = {
 	isOpen: boolean;
 	onClose: () => void;
 };
-
-const MONTHS = [
-	'january',
-	'february',
-	'march',
-	'april',
-	'may',
-	'june',
-	'july',
-	'august',
-	'september',
-	'october',
-	'november',
-	'december',
-];
 
 const generateTwelveYears = (date: Date) => {
 	return Array.from({ length: 12 }, (_, index) => date.getFullYear() + index);

@@ -55,8 +55,8 @@ export async function updateEvent(eventId: string, updatedEvent: Partial<NewEven
 
 	const editedEvent = {
 		...updatedEvent,
-		...(updatedEvent.startDate && { startDate: startOfDay(updatedEvent.startDate) }),
-		...(updatedEvent.endDate && { endDate: startOfDay(updatedEvent.endDate) }),
+		...(updatedEvent.startDate && { startDate: startOfDay(updatedEvent.startDate).toISOString() }),
+		...(updatedEvent.endDate && { endDate: endOfDay(updatedEvent.endDate).toISOString() }),
 		...(updatedEvent.repeat && { repeat: updatedEvent.repeat[0] }),
 	};
 

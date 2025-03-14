@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -13,6 +14,7 @@ import {
 	removeEvent,
 	updateEvent,
 } from '@/lib/appwrite/crud';
+import { useUpdateRepeatedEvents } from '@/store/events';
 import { INewAccount, ISignInAccount, NewEvent, NewEventForm } from '@/types/appwrite';
 import { generateEventsQueryKey } from '@/utilities/appwrite';
 
@@ -36,13 +38,22 @@ export function useSignOutAccount() {
 
 export function useEvents(date: Date) {
 	const EVENTS_DATE_QUERY_KEY = generateEventsQueryKey(date);
+	const updateRepeatedEvents = useUpdateRepeatedEvents();
 
-	return useQuery({
+	const query = useQuery({
 		queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY, EVENTS_DATE_QUERY_KEY],
 		queryFn: () => getEvents(date),
 		staleTime: Infinity,
 		gcTime: 1000 * 60 * 60, // 1h,
 	});
+
+	useEffect(() => {
+		if (query.data) {
+			updateRepeatedEvents(query.data);
+		}
+	}, [query.data, updateRepeatedEvents]);
+
+	return query;
 }
 
 export function useSearchedEvents(eventName: string) {

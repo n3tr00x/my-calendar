@@ -7,7 +7,6 @@ import {
 	isSameMonth,
 	isSunday,
 	isToday,
-	isWithinInterval,
 	lastDayOfWeek,
 	setHours,
 	startOfMonth,
@@ -15,10 +14,12 @@ import {
 } from 'date-fns';
 
 import { EventPlaceholder } from '@/components/EventPlaceholder';
+import { WEEK_DAYS } from '@/constants/date';
 import { useEvents } from '@/hooks/appwrite';
 import { useUpdateSelectedDate } from '@/store/date';
-
-const WEEK_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+import { useRepeatedEvents } from '@/store/events';
+import { filterEventsWithRecurrence } from '@/utilities/event';
+import { removeDuplicates } from '@/utilities/helpers';
 
 const generateCalendarSheet = (date: Date) => {
 	const firstDayOfMonth = startOfMonth(date);
@@ -34,10 +35,13 @@ const generateCalendarSheet = (date: Date) => {
 
 export function Sheet({ selectedDate }: { selectedDate: Date }) {
 	const updateSelectedDate = useUpdateSelectedDate();
-	const { data: events, isLoading } = useEvents(selectedDate);
+	const repeatedEvents = useRepeatedEvents();
+	const { data: events = [], isLoading } = useEvents(selectedDate);
 
 	const sheet = generateCalendarSheet(startOfMonth(selectedDate));
 	const rowCount = Math.ceil(sheet.length / 7);
+
+	const eventsWithNoDuplicates = removeDuplicates(events.concat(repeatedEvents), '$id');
 
 	return (
 		<>
@@ -57,7 +61,7 @@ export function Sheet({ selectedDate }: { selectedDate: Date }) {
 			<Grid
 				templateColumns="repeat(7, 1fr)"
 				templateRows={`repeat(${rowCount}, 1fr)`} // Ensure consistent height for rows
-				height={80}
+				height="360px"
 			>
 				{sheet.map(date => (
 					<GridItem
@@ -89,13 +93,7 @@ export function Sheet({ selectedDate }: { selectedDate: Date }) {
 						{isLoading ? (
 							<EventPlaceholder />
 						) : (
-							events
-								?.filter(event =>
-									isWithinInterval(date, {
-										start: new Date(event.startDate),
-										end: new Date(event.endDate),
-									}),
-								)
+							filterEventsWithRecurrence(date, eventsWithNoDuplicates)
 								.slice(0, 3)
 								.map(event => <Box key={event.$id} h={1} bg="blue.500" m={1} rounded="full" />)
 						)}
