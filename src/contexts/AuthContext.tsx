@@ -10,6 +10,7 @@ type IAuthContext = {
 	isAuthenticated: boolean;
 	isLoading: boolean;
 	checkUserAuthStatus: () => Promise<string | undefined>;
+	refetchCurrentUser: () => Promise<void>;
 	removeAuthentication: () => void;
 	user: IUser | null;
 };
@@ -19,6 +20,7 @@ const INITIAL_AUTH_CONTEXT_STATE = {
 	isLoading: false,
 	checkUserAuthStatus: async () => '',
 	removeAuthentication: () => {},
+	refetchCurrentUser: async () => {},
 	user: null,
 };
 
@@ -59,6 +61,33 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		}
 	};
 
+	const refetchCurrentUser = async () => {
+		try {
+			if (!user) {
+				throw new Error('Not authorized');
+			}
+
+			const currentAccount = await getCurrentUser();
+			setUser(currentAccount);
+		} catch (error) {
+			if (
+				error instanceof AppwriteException &&
+				window.location.pathname !== '/sign-in' &&
+				window.location.pathname !== '/sign-up'
+			) {
+				const code = error.code;
+
+				toaster.create({
+					title: `Account unauthorized. Code ${code}`,
+					type: 'error',
+					duration: 4000,
+				});
+			}
+
+			setUser(null);
+		}
+	};
+
 	const removeAuthentication = () => {
 		setUser(null);
 		setIsAuthenticated(false);
@@ -76,6 +105,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 				user,
 				checkUserAuthStatus,
 				removeAuthentication,
+				refetchCurrentUser,
 			}}
 		>
 			{isLoading ? <MainLoader /> : children}
