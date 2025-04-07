@@ -41,7 +41,7 @@ export function useColorModeValue<T>(light: T, dark: T) {
 export function ColorModeIcon() {
 	const { colorMode } = useColorMode();
 
-	return colorMode === 'dark' ? <Moon /> : <Sun />;
+	return colorMode === 'dark' ? <Sun /> : <Moon />;
 }
 
 interface ColorModeButtonProps extends Omit<IconButtonProps, 'aria-label'> {}
@@ -58,12 +58,6 @@ export const ColorModeButton = React.forwardRef<HTMLButtonElement, ColorModeButt
 					size="sm"
 					ref={ref}
 					{...props}
-					css={{
-						_icon: {
-							width: '5',
-							height: '5',
-						},
-					}}
 				>
 					<ColorModeIcon />
 				</IconButton>
