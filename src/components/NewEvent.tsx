@@ -38,10 +38,9 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { toaster } from '@/components/ui/toaster';
 import { useAddNewEvent, useEditEvent } from '@/hooks/appwrite';
-import { useAuth } from '@/hooks/useAuth';
 import { NewEventSchema } from '@/schemas/NewEventSchema';
 import { useSelectedDate } from '@/store/date';
-import { Event, NewEvent, NewEventForm } from '@/types/appwrite';
+import { Event, NewEventForm } from '@/types/appwrite';
 import { addHoursAndResetMinutes, formatDateToYearMonthDay } from '@/utilities/date';
 
 export type DirtyField = {
@@ -82,7 +81,6 @@ type NewEventModalProps = {
 export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventModalProps) {
 	console.log('<NewEventModal /> render.');
 	const selectedDate = useSelectedDate();
-	const { user } = useAuth();
 	const { open, onOpen, onClose, setOpen } = useDisclosure();
 	const { mutateAsync: addNewEvent } = useAddNewEvent();
 	const { mutateAsync: editEvent } = useEditEvent();
@@ -96,7 +94,7 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 		getValues,
 		setValue,
 		reset,
-		formState: { errors, dirtyFields },
+		formState: { errors, dirtyFields, isSubmitting },
 	} = useForm<NewEventForm>({
 		resolver: zodResolver(NewEventSchema),
 		defaultValues: {
@@ -111,6 +109,8 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 			repeat: editedEvent ? [editedEvent.repeat] : ['no-repeat'],
 		},
 	});
+
+	const isEventModified = dirtyFields && Object.keys(dirtyFields).length === 0;
 
 	const toggleEventFormHandler = ({ open }: MenuOpenChangeDetails) => {
 		setOpen(open);
@@ -179,7 +179,7 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 				return toaster.create({
 					title: 'An edit event problem',
 					type: 'error',
-					description: error?.message,
+					description: error.message,
 					placement: 'bottom-end',
 					duration: 4000,
 				});
@@ -192,13 +192,7 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 	const submitHandler = async (event: NewEventForm) => {
 		onClose();
 		try {
-			const newEvent: NewEvent = {
-				...event,
-				user: user?.$id,
-				accountId: user?.accountId,
-			};
-
-			await addNewEvent(newEvent);
+			await addNewEvent(event);
 
 			return toaster.create({
 				title: 'The event has been added!',
@@ -211,7 +205,7 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 				return toaster.create({
 					title: 'New event problem',
 					type: 'error',
-					description: error?.message,
+					description: error.message,
 					placement: 'bottom-end',
 					duration: 4000,
 				});
@@ -320,6 +314,7 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 							type="submit"
 							colorPalette="blue"
 							minWidth={16}
+							disabled={isSubmitting || isEventModified}
 							onClick={event => event.stopPropagation()}
 						>
 							{editedEvent ? 'Edit' : 'Add'}
