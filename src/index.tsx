@@ -17,7 +17,7 @@ const queryClient = new QueryClient();
 createRoot(root).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<ReactQueryDevtools initialIsOpen={false} />
+			<ReactQueryDevtools initialIsOpen={true} />
 			<ChakraProvider value={system}>
 				<ColorModeProvider enableSystem>
 					<AuthProvider>
