@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom';
-import { Box, Flex, Image, Text } from '@chakra-ui/react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Avatar, Box, Flex, Image, Text } from '@chakra-ui/react';
 import { LogOut, Menu, Plus, Search } from 'lucide-react';
 
 import logo from '@/assets/logo.png';
 import { AlertDialog } from '@/components/AlertDialog';
 import { NewEventModal } from '@/components/NewEvent';
-import { Avatar } from '@/components/ui/avatar';
+// import {  } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ColorModeButton } from '@/components/ui/color-mode';
 import {
@@ -69,19 +69,26 @@ export function Sidebar() {
 					</Button>
 				</DrawerBody>
 				<DrawerFooter justifyContent="space-between">
-					<Box p={1}>
-						<Flex>
-							<Avatar name={user?.name} />
-							<Text alignSelf="center" ml="8px">
-								{user?.name}
-							</Text>
-						</Flex>
+					<Box>
+						<Button variant="ghost" py={6}>
+							<Link to="/settings">
+								<Flex gap={1}>
+									<Avatar.Root>
+										<Avatar.Fallback name={user?.name} />
+										<Avatar.Image src={user?.avatar || ''} />
+									</Avatar.Root>
+									<Text alignSelf="center" ml="8px">
+										{user?.name}
+									</Text>
+								</Flex>
+							</Link>
+						</Button>
 					</Box>
 					<Box>
-						<ColorModeButton px={4} minH={10} />
+						<ColorModeButton px={4} size="md" />
 						<AlertDialog
 							alertTriggerComponent={
-								<Button variant="ghost">
+								<Button variant="ghost" size="md">
 									<LogOut />
 								</Button>
 							}
