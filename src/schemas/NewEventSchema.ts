@@ -43,4 +43,24 @@ export const NewEventSchema = z
 	.refine(event => validateTimeOrder(event.startTime, event.endTime), {
 		message: 'End time cannot be earlier than start time',
 		path: ['endTime'],
-	});
+	})
+	.refine(
+		data => {
+			const start = new Date(data.startDate);
+			const end = new Date(data.endDate);
+			const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+			const repeat = data.repeat[0];
+
+			const maxDurations = {
+				daily: 1,
+				weekly: 7,
+				monthly: 30,
+			};
+
+			return repeat === 'no-repeat' || duration < maxDurations[repeat];
+		},
+		{
+			message: 'Event duration must be shorter than the repeat frequency',
+			path: ['endDate'],
+		},
+	);
