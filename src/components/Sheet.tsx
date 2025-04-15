@@ -1,4 +1,5 @@
 import { Box, chakra, Grid, GridItem } from '@chakra-ui/react';
+import { UseQueryResult } from '@tanstack/react-query';
 import {
 	eachDayOfInterval,
 	endOfMonth,
@@ -15,11 +16,9 @@ import {
 
 import { EventPlaceholder } from '@/components/EventPlaceholder';
 import { WEEK_DAYS } from '@/constants/date';
-import { useEvents } from '@/hooks/appwrite';
 import { useUpdateSelectedDate } from '@/store/date';
-import { useRepeatedEvents } from '@/store/events';
+import { Event } from '@/types/appwrite';
 import { filterEventsWithRecurrence } from '@/utilities/event';
-import { removeDuplicates } from '@/utilities/helpers';
 
 const generateCalendarSheet = (date: Date) => {
 	const firstDayOfMonth = startOfMonth(date);
@@ -33,15 +32,17 @@ const generateCalendarSheet = (date: Date) => {
 	return dates;
 };
 
-export function Sheet({ selectedDate }: { selectedDate: Date }) {
+type SheetProps = {
+	selectedDate: Date;
+	eventsQuery: UseQueryResult<Event[], Error>;
+};
+
+export function Sheet({ selectedDate, eventsQuery }: SheetProps) {
 	const updateSelectedDate = useUpdateSelectedDate();
-	const repeatedEvents = useRepeatedEvents();
-	const { data: events = [], isLoading } = useEvents(selectedDate);
+	const { data: events = [], isLoading } = eventsQuery;
 
 	const sheet = generateCalendarSheet(startOfMonth(selectedDate));
 	const rowCount = Math.ceil(sheet.length / 7);
-
-	const eventsWithNoDuplicates = removeDuplicates(events.concat(repeatedEvents), '$id');
 
 	return (
 		<>
@@ -93,7 +94,7 @@ export function Sheet({ selectedDate }: { selectedDate: Date }) {
 						{isLoading ? (
 							<EventPlaceholder />
 						) : (
-							filterEventsWithRecurrence(date, eventsWithNoDuplicates)
+							filterEventsWithRecurrence(date, events)
 								.slice(0, 3)
 								.map(event => <Box key={event.$id} h={1} bg="blue.500" m={1} rounded="full" />)
 						)}

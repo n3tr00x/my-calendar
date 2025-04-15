@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as TSwiper } from 'swiper/types';
 
 import { Sheet } from '@/components/Sheet';
+import { useEvents } from '@/hooks/appwrite';
 import { useSelectedDate, useUpdateSelectedDate } from '@/store/date';
 import { getStartOfNextMonth, getStartOfPreviousMonth } from '@/utilities/date';
 
@@ -12,7 +13,10 @@ import 'swiper/css';
 export function Calendar() {
 	console.log('<Calendar /> render.');
 	const selectedDate = useSelectedDate();
+	const eventsQuery = useEvents(selectedDate);
 	const updateSelectedDate = useUpdateSelectedDate();
+
+	const visibleMonths = [subMonths(selectedDate, 1), selectedDate, addMonths(selectedDate, 1)];
 
 	const slideChangeHandler = (swiper: TSwiper) => {
 		const activeIndex = swiper.activeIndex;
@@ -29,15 +33,11 @@ export function Calendar() {
 	return (
 		<Box as="section" id="calendar">
 			<Swiper initialSlide={1} onSlideChange={slideChangeHandler} spaceBetween={24}>
-				<SwiperSlide>
-					<Sheet selectedDate={subMonths(selectedDate, 1)} />
-				</SwiperSlide>
-				<SwiperSlide>
-					<Sheet selectedDate={selectedDate} />
-				</SwiperSlide>
-				<SwiperSlide>
-					<Sheet selectedDate={addMonths(selectedDate, 1)} />
-				</SwiperSlide>
+				{visibleMonths.map(month => (
+					<SwiperSlide key={month.getTime()}>
+						<Sheet selectedDate={month} eventsQuery={eventsQuery} />
+					</SwiperSlide>
+				))}
 			</Swiper>
 		</Box>
 	);
