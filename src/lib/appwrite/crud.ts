@@ -1,8 +1,29 @@
 import { ID, Query } from 'appwrite';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek } from 'date-fns';
 
-import { account, config, databases } from '@/lib/appwrite';
-import { Event, INewUser, NewEvent, NewEventForm } from '@/types/appwrite';
+import { account, config, databases, storage } from '@/lib/appwrite';
+import { Event, INewUser, IUser, NewEvent, NewEventForm } from '@/types/appwrite';
+
+export async function setAvatarImage(file: File, user: IUser) {
+	const bucketFile = await storage.createFile(config.storageId, ID.unique(), file);
+	const fileView = storage.getFileView(config.storageId, bucketFile.$id);
+
+	if (user.avatar && user.avatarId) {
+		await storage.deleteFile(config.storageId, user.avatarId);
+	}
+
+	const newAvatarImage = {
+		avatar: fileView,
+		avatarId: bucketFile.$id,
+	};
+
+	await databases.updateDocument(
+		config.databaseId,
+		config.usersCollectionId,
+		user.$id,
+		newAvatarImage,
+	);
+}
 
 export async function saveNewUser(user: INewUser) {
 	return await databases.createDocument(
@@ -34,12 +55,18 @@ export async function getEvents(date: Date) {
 	return events.documents as Event[];
 }
 
-export async function addNewEvent(event: NewEvent) {
+export async function addNewEvent(event: NewEvent, user: IUser | null) {
+	if (!user) {
+		throw new Error('Not found user');
+	}
+
 	const newEvent = {
 		...event,
 		startDate: startOfDay(event.startDate).toISOString(),
 		endDate: endOfDay(event.endDate).toISOString(),
 		repeat: event.repeat[0],
+		accountId: user.accountId,
+		user: user.$id,
 	};
 
 	await databases.createDocument(
@@ -51,8 +78,6 @@ export async function addNewEvent(event: NewEvent) {
 }
 
 export async function updateEvent(eventId: string, updatedEvent: Partial<NewEventForm>) {
-	console.log('update event');
-
 	const editedEvent = {
 		...updatedEvent,
 		...(updatedEvent.startDate && { startDate: startOfDay(updatedEvent.startDate).toISOString() }),
@@ -60,7 +85,7 @@ export async function updateEvent(eventId: string, updatedEvent: Partial<NewEven
 		...(updatedEvent.repeat && { repeat: updatedEvent.repeat[0] }),
 	};
 
-	await databases.updateDocument(
+	return await databases.updateDocument(
 		config.databaseId,
 		config.eventsCollectionId,
 		eventId,
@@ -69,7 +94,7 @@ export async function updateEvent(eventId: string, updatedEvent: Partial<NewEven
 }
 
 export async function removeEvent(eventId: string) {
-	await databases.deleteDocument(config.databaseId, config.eventsCollectionId, eventId);
+	return await databases.deleteDocument(config.databaseId, config.eventsCollectionId, eventId);
 }
 
 export async function getEventsByEventName(eventName: string) {
