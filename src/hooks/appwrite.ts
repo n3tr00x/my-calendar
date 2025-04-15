@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -6,17 +6,19 @@ import {
 	EVENTS_RANGE_QUERY_KEY,
 	EVENTS_SEARCH_QUERY_KEY,
 } from '@/constants/appwrite';
+import { useAuth } from '@/hooks/useAuth';
 import { createAccount, signInAccount, signOutAccount } from '@/lib/appwrite/auth';
 import {
 	addNewEvent,
 	getEvents,
 	getEventsByEventName,
 	removeEvent,
+	setAvatarImage,
 	updateEvent,
 } from '@/lib/appwrite/crud';
-import { useUpdateRepeatedEvents } from '@/store/events';
-import { INewAccount, ISignInAccount, NewEvent, NewEventForm } from '@/types/appwrite';
+import { Event, INewAccount, ISignInAccount, NewEvent, NewEventForm } from '@/types/appwrite';
 import { generateEventsQueryKey } from '@/utilities/appwrite';
+import { removeDuplicates } from '@/utilities/helpers';
 
 export function useCreateUserAccount() {
 	return useMutation({
@@ -36,22 +38,48 @@ export function useSignOutAccount() {
 	});
 }
 
+export function useSetAvatar() {
+	const { user } = useAuth();
+
+	if (!user) {
+		throw new Error('No user found');
+	}
+
+	return useMutation({
+		mutationFn: (file: File) => setAvatarImage(file, user),
+	});
+}
+
 export function useEvents(date: Date) {
 	const EVENTS_DATE_QUERY_KEY = generateEventsQueryKey(date);
-	const updateRepeatedEvents = useUpdateRepeatedEvents();
+	const queryClient = useQueryClient();
+	const navigate = useNavigate();
 
 	const query = useQuery({
 		queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY, EVENTS_DATE_QUERY_KEY],
-		queryFn: () => getEvents(date),
+		queryFn: async () => {
+			const fetchedEvents = await getEvents(date);
+			const queries = queryClient.getQueriesData({
+				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY],
+			});
+
+			const cachedEvents = queries
+				.map(entry => entry[1])
+				.filter(events => Array.isArray(events))
+				.flat() as Event[];
+
+			const mergedEvents = [...cachedEvents, ...fetchedEvents];
+			const uniquedEvents = removeDuplicates(mergedEvents, '$id');
+
+			return uniquedEvents;
+		},
 		staleTime: Infinity,
 		gcTime: 1000 * 60 * 60, // 1h,
 	});
 
-	useEffect(() => {
-		if (query.data) {
-			updateRepeatedEvents(query.data);
-		}
-	}, [query.data, updateRepeatedEvents]);
+	if (query.isError) {
+		navigate('/sign-in');
+	}
 
 	return query;
 }
@@ -66,9 +94,10 @@ export function useSearchedEvents(eventName: string) {
 
 export function useAddNewEvent() {
 	const queryClient = useQueryClient();
+	const { user } = useAuth();
 
 	return useMutation({
-		mutationFn: (event: NewEvent) => addNewEvent(event),
+		mutationFn: (event: NewEvent) => addNewEvent(event, user),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY],
@@ -88,10 +117,21 @@ export function useEditEvent() {
 			eventId: string;
 			editedEvent: Partial<NewEventForm>;
 		}) => updateEvent(eventId, editedEvent),
-		onSuccess: () => {
+		onSuccess: updatedEvent => {
 			queryClient.invalidateQueries({
 				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY],
 			});
+
+			queryClient.setQueriesData(
+				{ queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY] },
+				(previousCachedEvents: Event[]) => {
+					const removedPreviousCachedEvent = previousCachedEvents.filter(
+						event => event.$id !== updatedEvent.$id,
+					);
+
+					return [...removedPreviousCachedEvent, updatedEvent];
+				},
+			);
 		},
 	});
 }
@@ -101,10 +141,19 @@ export function useRemoveEvent() {
 
 	return useMutation({
 		mutationFn: (eventId: string) => removeEvent(eventId),
-		onSuccess: () => {
+		onSuccess: (_, eventId) => {
+			console.log('removedEvent', eventId);
+
 			queryClient.invalidateQueries({
 				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY],
 			});
+
+			queryClient.setQueriesData(
+				{ queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY] },
+				(previousCachedEvents: Event[]) => {
+					return previousCachedEvents.filter(event => event.$id !== eventId);
+				},
+			);
 		},
 	});
 }

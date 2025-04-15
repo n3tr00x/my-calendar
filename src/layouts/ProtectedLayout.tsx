@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Flex } from '@chakra-ui/react';
 
-import { Topbar } from '@/components/Topbar';
 import { useAuth } from '@/hooks/useAuth';
 
 export function ProtectedLayout() {
@@ -25,10 +23,5 @@ export function ProtectedLayout() {
 		return null;
 	}
 
-	return (
-		<Flex h="100vh" direction="column">
-			<Topbar />
-			<Outlet />
-		</Flex>
-	);
+	return <Outlet />;
 }

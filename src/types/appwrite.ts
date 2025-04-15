@@ -7,6 +7,7 @@ export type IUser = Models.Document & {
 	email: string;
 	name: string;
 	avatar: string | null;
+	avatarId: string | null;
 	accountId: string;
 };
 
