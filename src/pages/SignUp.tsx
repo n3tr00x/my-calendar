@@ -15,7 +15,7 @@ import { z } from 'zod';
 
 import { Field } from '@/components/ui/field';
 import { toaster } from '@/components/ui/toaster';
-import { useCreateUserAccount, useSignInAccount } from '@/hooks/appwrite';
+import { useCreateUserAccount } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 
 const SignUpValidation = z
@@ -45,7 +45,6 @@ export function SignUpPage() {
 	const navigate = useNavigate();
 	const { checkUserAuthStatus } = useAuth();
 	const { mutateAsync: createAccount } = useCreateUserAccount();
-	const { mutateAsync: signInAccount } = useSignInAccount();
 
 	const {
 		register,
@@ -58,18 +57,26 @@ export function SignUpPage() {
 	const onSubmit = async ({ email, username, password }: z.infer<typeof SignUpValidation>) => {
 		try {
 			await createAccount({ email, password, username });
-			await signInAccount({ email, password });
 			await checkUserAuthStatus();
 
-			navigate('/');
+			toaster.create({
+				type: 'success',
+				title: 'The account has created correctly.',
+			});
+
+			toaster.create({
+				type: 'warning',
+				title: 'Verify your account',
+				description: 'Please check your email and verify your account to continue.',
+			});
+
+			navigate('/sign-in');
 		} catch (error) {
 			if (error instanceof AppwriteException) {
-				return toaster.create({
-					title: 'Sign up problem!',
+				toaster.create({
 					type: 'error',
+					title: 'Sign up problem!',
 					description: error?.message,
-					placement: 'bottom-end',
-					duration: 4000,
 				});
 			}
 		}

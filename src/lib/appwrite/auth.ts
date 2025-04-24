@@ -4,8 +4,20 @@ import { account, config, databases } from '@/lib/appwrite';
 import { saveNewUser } from '@/lib/appwrite/crud';
 import { INewAccount, ISignInAccount, IUser } from '@/types/appwrite';
 
+export async function updateVerification(userId: string, token: string) {
+	await account.updateVerification(userId, token);
+}
+
+export async function verifyEmail() {
+	await account.createVerification('http://localhost:5173/verify-email');
+}
+
 export async function createAccount(user: INewAccount) {
 	const newAccount = await account.create(ID.unique(), user.email, user.password, user.username);
+	await signInAccount(user);
+	await verifyEmail();
+	await signOutAccount();
+
 	const newUser = await saveNewUser({
 		accountId: newAccount.$id,
 		email: newAccount.email,
@@ -25,6 +37,12 @@ export async function signOutAccount() {
 
 export async function getCurrentUser() {
 	const currentAccount = await account.get();
+
+	if (!currentAccount.emailVerification) {
+		await signOutAccount();
+		throw new Error('An email is not verified.');
+	}
+
 	const { documents } = await databases.listDocuments(config.databaseId, config.usersCollectionId, [
 		Query.equal('accountId', currentAccount.$id),
 	]);

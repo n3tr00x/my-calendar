@@ -1,15 +1,15 @@
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 import { AppwriteException } from 'appwrite';
 
-import { MainLoader } from '@/components/MainLoader';
 import { toaster } from '@/components/ui/toaster';
 import { getCurrentUser } from '@/lib/appwrite/auth';
 import { IUser } from '@/types/appwrite';
+import { isAuthPage } from '@/utilities/helpers';
 
 type IAuthContext = {
 	isAuthenticated: boolean;
 	isLoading: boolean;
-	checkUserAuthStatus: () => Promise<string | undefined>;
+	checkUserAuthStatus: () => Promise<void>;
 	refetchCurrentUser: () => Promise<void>;
 	removeAuthentication: () => void;
 	user: IUser | null;
@@ -18,7 +18,7 @@ type IAuthContext = {
 const INITIAL_AUTH_CONTEXT_STATE = {
 	isAuthenticated: false,
 	isLoading: false,
-	checkUserAuthStatus: async () => '',
+	checkUserAuthStatus: async () => {},
 	removeAuthentication: () => {},
 	refetchCurrentUser: async () => {},
 	user: null,
@@ -44,18 +44,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		} catch (error) {
 			if (
 				error instanceof AppwriteException &&
-				window.location.pathname !== '/sign-in' &&
-				window.location.pathname !== '/sign-up'
+				error.type === 'general_unauthorized_scope' &&
+				isAuthPage()
 			) {
-				const code = error.code;
-				return toaster.create({
-					title: `Account unauthorized. Please try to sign in again. Code ${code}`,
-					type: 'error',
-					duration: 4000,
-				});
+				return;
 			}
+
 			setIsAuthenticated(false);
 			setUser(null);
+			throw error;
 		} finally {
 			setIsLoading(false);
 		}
@@ -108,7 +105,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 				refetchCurrentUser,
 			}}
 		>
-			{isLoading ? <MainLoader /> : children}
+			{children}
 		</AuthContext.Provider>
 	);
 }

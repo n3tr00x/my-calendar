@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
+import { MainLoader } from '@/components/MainLoader';
+import { toaster } from '@/components/ui/toaster';
 import { useAuth } from '@/hooks/useAuth';
+import { isCookieFallbackInvalid } from '@/utilities/helpers';
 
 export function ProtectedLayout() {
 	console.log('<Protected Layout /> render');
@@ -9,18 +12,21 @@ export function ProtectedLayout() {
 	const { isAuthenticated, isLoading } = useAuth();
 	const navigate = useNavigate();
 
-	useEffect(() => {
-		if (
-			(localStorage.getItem('cookieFallback') === null ||
-				localStorage.getItem('cookieFallback') === '[]') &&
-			!isAuthenticated
-		) {
-			navigate('/sign-in', { replace: true });
-		}
-	}, [isAuthenticated, navigate]);
+	const shouldRedirect = isCookieFallbackInvalid() && !isAuthenticated;
 
-	if (isLoading || !isAuthenticated) {
-		return null;
+	useEffect(() => {
+		if (shouldRedirect) {
+			navigate('/sign-in', { replace: true });
+
+			toaster.error({
+				title: `Account unauthorized. Please try to sign in again.`,
+				duration: 4000,
+			});
+		}
+	}, [shouldRedirect, navigate]);
+
+	if (isLoading) {
+		return <MainLoader />;
 	}
 
 	return <Outlet />;

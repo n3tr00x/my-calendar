@@ -1,4 +1,5 @@
-import { Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Box, Container, Flex, Heading, Highlight, HStack, Text } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 
@@ -6,6 +7,8 @@ import firstSliderImage from '@/assets/slider/slider-1.jpg';
 import secondSliderImage from '@/assets/slider/slider-2.jpg';
 import thirdSliderImage from '@/assets/slider/slider-3.jpg';
 import { Carousel } from '@/components/Carousel';
+import { MainLoader } from '@/components/MainLoader';
+import { useAuth } from '@/hooks/useAuth';
 
 const CAROUSEL_ITEMS = [
 	{
@@ -33,6 +36,18 @@ const CAROUSEL_ITEMS = [
 
 export function AuthLayout() {
 	console.log('<AuthLayout /> render');
+	const navigate = useNavigate();
+	const { user, isAuthenticated, isLoading } = useAuth();
+
+	useEffect(() => {
+		if (!isLoading && user && isAuthenticated) {
+			navigate('/', { replace: true });
+		}
+	}, [user, isAuthenticated, isLoading, navigate]);
+
+	if (isLoading || (user && isAuthenticated)) {
+		return <MainLoader />;
+	}
 
 	return (
 		<Container maxW="5xl" minH="100vh" centerContent justifyContent="center">

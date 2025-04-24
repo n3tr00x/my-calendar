@@ -46,11 +46,16 @@ export function SignInPage() {
 		} catch (error) {
 			if (error instanceof AppwriteException) {
 				return toaster.create({
-					title: 'Sign in problem!',
 					type: 'error',
+					title: 'Sign in problem!',
 					description: error?.message,
-					placement: 'bottom-end',
-					duration: 4000,
+				});
+			}
+
+			if (error instanceof Error) {
+				return toaster.create({
+					type: 'warning',
+					title: error.message,
 				});
 			}
 		}
