@@ -9,7 +9,8 @@ export async function updateVerification(userId: string, token: string) {
 }
 
 export async function verifyEmail() {
-	await account.createVerification('http://localhost:5173/verify-email');
+	const origin = window.location.origin;
+	await account.createVerification(origin + '/verify-email');
 }
 
 export async function createAccount(user: INewAccount) {
