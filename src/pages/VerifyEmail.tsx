@@ -14,16 +14,18 @@ export function VerifyEmailPage() {
 
 	const verifyEmail = useCallback(async () => {
 		try {
-			if (userId && token) {
-				await updateVerification(userId, token);
-
-				toaster.create({
-					type: 'success',
-					title: 'Email verified',
-					description:
-						'Your email has been successfully verified. You can now continue using your account.',
-				});
+			if (!userId || !token) {
+				throw new Error('Invalid verification link.');
 			}
+
+			await updateVerification(userId, token);
+
+			toaster.create({
+				type: 'success',
+				title: 'Email verified',
+				description:
+					'Your email has been successfully verified. You can now continue using your account.',
+			});
 		} catch (error) {
 			if (error instanceof AppwriteException) {
 				toaster.create({
@@ -31,6 +33,16 @@ export function VerifyEmailPage() {
 					title: 'Verfication error',
 					description: error.message,
 				});
+				return;
+			}
+
+			if (error instanceof Error) {
+				toaster.create({
+					type: 'error',
+					title: 'Invalid link',
+					description: error.message,
+				});
+				return;
 			}
 		} finally {
 			navigate('/sign-in');
