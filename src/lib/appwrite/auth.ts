@@ -28,6 +28,27 @@ export async function createAccount(user: INewAccount) {
 	return newUser as IUser;
 }
 
+export async function updateUsername(user: IUser, username: string) {
+	await databases.updateDocument(config.databaseId, config.usersCollectionId, user.$id, {
+		name: username,
+	});
+	await account.updateName(username);
+}
+
+export async function updatePassword(oldPassword: string, newPassword: string) {
+	await account.updatePassword(newPassword, oldPassword);
+}
+
+export async function updateEmail(newEmail: string, password: string) {
+	const user = await getCurrentUser();
+
+	await account.updateEmail(newEmail, password);
+	await databases.updateDocument(config.databaseId, config.usersCollectionId, user.$id, {
+		email: newEmail,
+	});
+	await verifyEmail();
+}
+
 export async function signInAccount(user: ISignInAccount) {
 	await account.createEmailPasswordSession(user.email, user.password);
 }

@@ -7,7 +7,14 @@ import {
 	EVENTS_SEARCH_QUERY_KEY,
 } from '@/constants/appwrite';
 import { useAuth } from '@/hooks/useAuth';
-import { createAccount, signInAccount, signOutAccount } from '@/lib/appwrite/auth';
+import {
+	createAccount,
+	signInAccount,
+	signOutAccount,
+	updateEmail,
+	updatePassword,
+	updateUsername,
+} from '@/lib/appwrite/auth';
 import {
 	addNewEvent,
 	getEvents,
@@ -47,6 +54,32 @@ export function useSetAvatar() {
 
 	return useMutation({
 		mutationFn: (file: File) => setAvatarImage(file, user),
+	});
+}
+
+export function useUpdatePassword() {
+	return useMutation({
+		mutationFn: ({ oldPassword, newPassword }: { oldPassword: string; newPassword: string }) =>
+			updatePassword(oldPassword, newPassword),
+	});
+}
+
+export function useUpdateUsername() {
+	const { user } = useAuth();
+
+	if (!user) {
+		throw new Error('No user found');
+	}
+
+	return useMutation({
+		mutationFn: (username: string) => updateUsername(user, username),
+	});
+}
+
+export function useUpdateEmail() {
+	return useMutation({
+		mutationFn: ({ email, password }: { email: string; password: string }) =>
+			updateEmail(email, password),
 	});
 }
 
