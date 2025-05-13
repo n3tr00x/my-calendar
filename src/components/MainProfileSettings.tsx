@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
 	ActionBar,
 	Avatar,
@@ -16,16 +15,15 @@ import {
 } from '@chakra-ui/react';
 import { ArrowUpFromLine, LogOut } from 'lucide-react';
 
+import { LogoutAlertDialog } from '@/components/LogoutAlertDialog';
 import { Button } from '@/components/ui/button';
 import { toaster } from '@/components/ui/toaster';
-import { useSetAvatar, useSignOutAccount } from '@/hooks/appwrite';
+import { useSetAvatar } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 
 export function MainProfileSettings() {
-	const navigate = useNavigate();
-	const { user, refetchCurrentUser, removeAuthentication } = useAuth();
+	const { user, refetchCurrentUser } = useAuth();
 	const { mutateAsync: setNewAvatar } = useSetAvatar();
-	const { mutateAsync: signOut } = useSignOutAccount();
 	const [file, setFile] = useState<File | null>(null);
 	const [isActionBarOpen, setIsActionBarOpen] = useState(false);
 
@@ -43,19 +41,6 @@ export function MainProfileSettings() {
 
 		setIsActionBarOpen(true);
 		setFile(file);
-	};
-
-	const signOutHandler = async () => {
-		await signOut();
-		removeAuthentication();
-		navigate('/sign-in', { replace: true });
-
-		toaster.create({
-			title: 'You have been logged out successfully.',
-			type: 'success',
-			placement: 'bottom-end',
-			duration: 4000,
-		});
 	};
 
 	const saveAvatarHandler = () => {
@@ -109,16 +94,14 @@ export function MainProfileSettings() {
 						</Button>
 					</FileUploadTrigger>
 				</FileUploadRoot>
-				<Button
-					size="xs"
-					variant="surface"
-					colorPalette="red"
-					w={{ base: '1/2', lg: 'full' }}
-					onClick={signOutHandler}
-				>
-					<LogOut />
-					<Text>Sign out</Text>
-				</Button>
+				<LogoutAlertDialog
+					trigger={
+						<Button size="xs" variant="surface" colorPalette="red" w={{ base: '1/2', lg: 'full' }}>
+							<LogOut />
+							<Text>Sign out</Text>
+						</Button>
+					}
+				/>
 			</Flex>
 
 			<ActionBar.Root open={isActionBarOpen}>
