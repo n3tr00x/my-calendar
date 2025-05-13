@@ -15,8 +15,6 @@ export type NewUser = {
 	accountId: string;
 	email: string;
 	name: string;
-	avatar: string | null;
-	avatarId: string | null;
 };
 
 export type INewAccount = {
