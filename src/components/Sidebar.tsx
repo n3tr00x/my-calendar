@@ -1,11 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Avatar, Box, Flex, Image, Text } from '@chakra-ui/react';
 import { LogOut, Menu, Plus, Search } from 'lucide-react';
 
 import logo from '@/assets/logo.png';
-import { AlertDialog } from '@/components/AlertDialog';
+import { LogoutAlertDialog } from '@/components/LogoutAlertDialog';
 import { NewEventModal } from '@/components/NewEvent';
-// import {  } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ColorModeButton } from '@/components/ui/color-mode';
 import {
@@ -18,27 +17,10 @@ import {
 	DrawerRoot,
 	DrawerTrigger,
 } from '@/components/ui/drawer';
-import { toaster } from '@/components/ui/toaster';
-import { useSignOutAccount } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 
 export function Sidebar() {
-	const { user, removeAuthentication } = useAuth();
-	const { mutateAsync: signOut } = useSignOutAccount();
-	const navigate = useNavigate();
-
-	const signOutHandler = async () => {
-		await signOut();
-		removeAuthentication();
-		navigate('/sign-in', { replace: true });
-
-		toaster.create({
-			title: 'You have been logged out successfully.',
-			type: 'success',
-			placement: 'bottom-end',
-			duration: 4000,
-		});
-	};
+	const { user } = useAuth();
 
 	return (
 		<DrawerRoot placement="start">
@@ -86,16 +68,12 @@ export function Sidebar() {
 					</Box>
 					<Box>
 						<ColorModeButton px={4} size="md" />
-						<AlertDialog
-							alertTriggerComponent={
+						<LogoutAlertDialog
+							trigger={
 								<Button variant="ghost" size="md">
 									<LogOut />
 								</Button>
 							}
-							action={signOutHandler}
-							actionButtonLabel="Log out"
-							title="Leaving your account"
-							description="Your session will be ended. Do you want to continue?"
 						/>
 					</Box>
 				</DrawerFooter>
