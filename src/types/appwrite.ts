@@ -1,7 +1,7 @@
 import { Models } from 'appwrite';
 import { z } from 'zod';
 
-import { NewEventSchema } from '@/schemas/NewEventSchema';
+import { NewEventSchema } from '@/schemas/new-event.schema';
 
 export type IUser = Models.Document & {
 	email: string;

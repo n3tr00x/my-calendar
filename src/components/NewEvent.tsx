@@ -38,7 +38,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { toaster } from '@/components/ui/toaster';
 import { useAddNewEvent, useEditEvent } from '@/hooks/appwrite';
-import { NewEventSchema } from '@/schemas/NewEventSchema';
+import { NewEventSchema } from '@/schemas/new-event.schema';
 import { useSelectedDate } from '@/store/date';
 import { Event, NewEventForm } from '@/types/appwrite';
 import { addHoursAndResetMinutes, formatDateToYearMonthDay } from '@/utilities/date';
