@@ -17,7 +17,7 @@ export type NewUser = {
 	name: string;
 };
 
-export type INewAccount = {
+export type NewAccount = {
 	email: string;
 	password: string;
 	username: string;

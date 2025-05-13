@@ -23,13 +23,13 @@ import {
 	setAvatarImage,
 	updateEvent,
 } from '@/lib/appwrite/crud';
-import { Event, INewAccount, ISignInAccount, NewEvent, NewEventForm } from '@/types/appwrite';
+import { Event, ISignInAccount, NewAccount, NewEvent, NewEventForm } from '@/types/appwrite';
 import { generateEventsQueryKey } from '@/utilities/appwrite';
 import { removeDuplicates } from '@/utilities/helpers';
 
 export function useCreateUserAccount() {
 	return useMutation({
-		mutationFn: (user: INewAccount) => createAccount(user),
+		mutationFn: (user: NewAccount) => createAccount(user),
 	});
 }
 
@@ -175,8 +175,6 @@ export function useRemoveEvent() {
 	return useMutation({
 		mutationFn: (eventId: string) => removeEvent(eventId),
 		onSuccess: (_, eventId) => {
-			console.log('removedEvent', eventId);
-
 			queryClient.invalidateQueries({
 				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY],
 			});

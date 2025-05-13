@@ -2,7 +2,7 @@ import { ID, Query } from 'appwrite';
 
 import { account, config, databases } from '@/lib/appwrite';
 import { saveNewUser } from '@/lib/appwrite/crud';
-import { INewAccount, ISignInAccount, User } from '@/types/appwrite';
+import { ISignInAccount, NewAccount, User } from '@/types/appwrite';
 
 export async function updateVerification(userId: string, token: string) {
 	await account.updateVerification(userId, token);
@@ -13,7 +13,7 @@ export async function verifyEmail() {
 	await account.createVerification(origin + '/verify-email');
 }
 
-export async function createAccount(user: INewAccount) {
+export async function createAccount(user: NewAccount) {
 	const newAccount = await account.create(ID.unique(), user.email, user.password, user.username);
 	await signInAccount(user);
 	await verifyEmail();
