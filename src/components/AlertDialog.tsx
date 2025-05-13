@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog';
 
 type EventSearchPopoverProps = {
-	alertTriggerComponent: ReactElement<ButtonProps & RefAttributes<HTMLButtonElement>>;
+	trigger: ReactElement<ButtonProps & RefAttributes<HTMLButtonElement>>;
 	title: string | JSX.Element;
 	description: string | JSX.Element;
 	action: () => void;
@@ -22,7 +22,7 @@ type EventSearchPopoverProps = {
 };
 
 export function AlertDialog({
-	alertTriggerComponent,
+	trigger,
 	title,
 	description,
 	action,
@@ -30,7 +30,7 @@ export function AlertDialog({
 }: EventSearchPopoverProps) {
 	return (
 		<DialogRoot role="alertdialog" placement="bottom" closeOnInteractOutside>
-			<DialogTrigger asChild>{alertTriggerComponent}</DialogTrigger>
+			<DialogTrigger asChild>{trigger}</DialogTrigger>
 			<DialogContent mx={{ base: 2, sm: 0 }}>
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
