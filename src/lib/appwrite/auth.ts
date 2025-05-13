@@ -2,7 +2,7 @@ import { ID, Query } from 'appwrite';
 
 import { account, config, databases } from '@/lib/appwrite';
 import { saveNewUser } from '@/lib/appwrite/crud';
-import { INewAccount, ISignInAccount, IUser } from '@/types/appwrite';
+import { INewAccount, ISignInAccount, User } from '@/types/appwrite';
 
 export async function updateVerification(userId: string, token: string) {
 	await account.updateVerification(userId, token);
@@ -25,10 +25,10 @@ export async function createAccount(user: INewAccount) {
 		name: newAccount.name,
 	});
 
-	return newUser as IUser;
+	return newUser as User;
 }
 
-export async function updateUsername(user: IUser, username: string) {
+export async function updateUsername(user: User, username: string) {
 	await databases.updateDocument(config.databaseId, config.usersCollectionId, user.$id, {
 		name: username,
 	});
@@ -73,5 +73,5 @@ export async function getCurrentUser() {
 		throw new Error('User not found.');
 	}
 
-	return documents[0] as IUser;
+	return documents[0] as User;
 }

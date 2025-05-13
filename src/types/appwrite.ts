@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { NewEventSchema } from '@/schemas/new-event.schema';
 
-export type IUser = Models.Document & {
+export type User = Models.Document & {
 	email: string;
 	name: string;
 	avatar: string | null;
@@ -35,7 +35,7 @@ export type NewEvent = z.infer<typeof NewEventSchema> & { user?: string; account
 
 export type Event = Models.Document & {
 	accountId: string;
-	user: IUser;
+	user: User;
 	title: string;
 	description: string;
 	isAllDay: boolean;

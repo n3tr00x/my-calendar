@@ -3,7 +3,7 @@ import { AppwriteException } from 'appwrite';
 
 import { toaster } from '@/components/ui/toaster';
 import { getCurrentUser } from '@/lib/appwrite/auth';
-import { IUser } from '@/types/appwrite';
+import type { User } from '@/types/appwrite';
 import { isAuthPage } from '@/utilities/helpers';
 
 type IAuthContext = {
@@ -12,7 +12,7 @@ type IAuthContext = {
 	checkUserAuthStatus: () => Promise<void>;
 	refetchCurrentUser: () => Promise<void>;
 	removeAuthentication: () => void;
-	user: IUser | null;
+	user: User | null;
 };
 
 const INITIAL_AUTH_CONTEXT_STATE = {
@@ -28,7 +28,7 @@ export const AuthContext = createContext<IAuthContext>(INITIAL_AUTH_CONTEXT_STAT
 
 export function AuthProvider({ children }: PropsWithChildren) {
 	console.log('<AuthProvider /> render.');
-	const [user, setUser] = useState<IUser | null>(null);
+	const [user, setUser] = useState<User | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
