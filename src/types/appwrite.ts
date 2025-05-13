@@ -1,6 +1,7 @@
 import { Models } from 'appwrite';
 import { z } from 'zod';
 
+import { SignInValidation, SignUpValidation } from '@/schemas/auth.schema';
 import { NewEventSchema } from '@/schemas/new-event.schema';
 
 export type User = Models.Document & {
@@ -43,3 +44,7 @@ export type Event = Models.Document & {
 };
 
 export type NewEventFormData = z.infer<typeof NewEventSchema>;
+
+export type SignUpFormData = z.infer<typeof SignUpValidation>;
+
+export type SignInFormData = z.infer<typeof SignInValidation>;

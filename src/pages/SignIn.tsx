@@ -11,17 +11,13 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppwriteException } from 'appwrite';
-import { z } from 'zod';
 
 import { Field } from '@/components/ui/field';
 import { toaster } from '@/components/ui/toaster';
 import { useSignInAccount } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
-
-const SignInValidation = z.object({
-	email: z.string().email(),
-	password: z.string().min(8).max(256),
-});
+import { SignInValidation } from '@/schemas/auth.schema';
+import { SignInFormData } from '@/types/appwrite';
 
 export function SignInPage() {
 	console.log('<SignInPage /> render.');
@@ -33,11 +29,11 @@ export function SignInPage() {
 		register,
 		handleSubmit,
 		formState: { errors, isSubmitting },
-	} = useForm<z.infer<typeof SignInValidation>>({
+	} = useForm<SignInFormData>({
 		resolver: zodResolver(SignInValidation),
 	});
 
-	const onSubmit = async ({ email, password }: z.infer<typeof SignInValidation>) => {
+	const onSubmit = async ({ email, password }: SignInFormData) => {
 		try {
 			await signInAccount({ email, password });
 			await checkUserAuthStatus();

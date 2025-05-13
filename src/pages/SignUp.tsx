@@ -11,33 +11,13 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppwriteException } from 'appwrite';
-import { z } from 'zod';
 
 import { Field } from '@/components/ui/field';
 import { toaster } from '@/components/ui/toaster';
 import { useCreateUserAccount } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
-
-const SignUpValidation = z
-	.object({
-		username: z
-			.string()
-			.min(3, { message: 'The username must contain at least 3 character(s)' })
-			.max(128),
-		email: z.string().email(),
-		password: z
-			.string()
-			.min(8, { message: 'The password must contain at least 8 character(s)' })
-			.max(256),
-		confirmPassword: z
-			.string()
-			.min(8, { message: 'The password must contain at least 8 character(s)' })
-			.max(256),
-	})
-	.refine(data => data.password === data.confirmPassword, {
-		path: ['confirmPassword'],
-		message: 'Passwords does not match.',
-	});
+import { SignUpValidation } from '@/schemas/auth.schema';
+import { SignUpFormData } from '@/types/appwrite';
 
 export function SignUpPage() {
 	console.log('<SignUpPage /> render.');
@@ -50,11 +30,11 @@ export function SignUpPage() {
 		register,
 		handleSubmit,
 		formState: { errors, isSubmitting },
-	} = useForm<z.infer<typeof SignUpValidation>>({
+	} = useForm<SignUpFormData>({
 		resolver: zodResolver(SignUpValidation),
 	});
 
-	const onSubmit = async ({ email, username, password }: z.infer<typeof SignUpValidation>) => {
+	const onSubmit = async ({ email, username, password }: SignUpFormData) => {
 		try {
 			await createAccount({ email, password, username });
 			await checkUserAuthStatus();
