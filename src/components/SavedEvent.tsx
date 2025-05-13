@@ -59,7 +59,7 @@ export function SavedEvent({ event, savedEventStyles }: SavedEventProps) {
 					}
 				/>
 				<AlertDialog
-					alertTriggerComponent={
+					trigger={
 						<Button variant="ghost" ml="auto" size="sm" onClick={event => event.stopPropagation()}>
 							<Trash />
 						</Button>
