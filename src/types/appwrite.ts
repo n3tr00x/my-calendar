@@ -11,11 +11,12 @@ export type User = Models.Document & {
 	accountId: string;
 };
 
-export type INewUser = {
+export type NewUser = {
 	accountId: string;
 	email: string;
 	name: string;
-	avatar?: string;
+	avatar: string | null;
+	avatarId: string | null;
 };
 
 export type INewAccount = {

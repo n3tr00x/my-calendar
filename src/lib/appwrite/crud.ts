@@ -2,7 +2,7 @@ import { ID, Query } from 'appwrite';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek } from 'date-fns';
 
 import { account, config, databases, storage } from '@/lib/appwrite';
-import { Event, INewUser, NewEvent, NewEventForm, User } from '@/types/appwrite';
+import { Event, NewEvent, NewEventForm, NewUser, User } from '@/types/appwrite';
 
 export async function setAvatarImage(file: File, user: User) {
 	const bucketFile = await storage.createFile(config.storageId, ID.unique(), file);
@@ -25,7 +25,7 @@ export async function setAvatarImage(file: File, user: User) {
 	);
 }
 
-export async function saveNewUser(user: INewUser) {
+export async function saveNewUser(user: NewUser) {
 	return await databases.createDocument(
 		config.databaseId,
 		config.usersCollectionId,
