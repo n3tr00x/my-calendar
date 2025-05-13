@@ -23,7 +23,7 @@ import {
 	setAvatarImage,
 	updateEvent,
 } from '@/lib/appwrite/crud';
-import { Event, ISignInAccount, NewAccount, NewEvent, NewEventForm } from '@/types/appwrite';
+import { Event, NewAccount, NewEventFormData, SignInAccount } from '@/types/appwrite';
 import { generateEventsQueryKey } from '@/utilities/appwrite';
 import { removeDuplicates } from '@/utilities/helpers';
 
@@ -35,7 +35,7 @@ export function useCreateUserAccount() {
 
 export function useSignInAccount() {
 	return useMutation({
-		mutationFn: (user: ISignInAccount) => signInAccount(user),
+		mutationFn: (user: SignInAccount) => signInAccount(user),
 	});
 }
 
@@ -130,7 +130,12 @@ export function useAddNewEvent() {
 	const { user } = useAuth();
 
 	return useMutation({
-		mutationFn: (event: NewEvent) => addNewEvent(event, user),
+		mutationFn: (event: NewEventFormData) => {
+			if (!user) {
+				throw new Error('User not authenticated');
+			}
+			return addNewEvent(event, user);
+		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: [EVENTS_QUERY_KEY, EVENTS_RANGE_QUERY_KEY],
@@ -148,7 +153,7 @@ export function useEditEvent() {
 			editedEvent,
 		}: {
 			eventId: string;
-			editedEvent: Partial<NewEventForm>;
+			editedEvent: Partial<NewEventFormData>;
 		}) => updateEvent(eventId, editedEvent),
 		onSuccess: updatedEvent => {
 			queryClient.invalidateQueries({

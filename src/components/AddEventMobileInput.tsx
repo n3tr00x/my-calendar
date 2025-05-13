@@ -5,9 +5,8 @@ import { AppwriteException } from 'appwrite';
 import { InputGroup } from '@/components/ui/input-group';
 import { toaster } from '@/components/ui/toaster';
 import { useAddNewEvent } from '@/hooks/appwrite';
-import { useAuth } from '@/hooks/useAuth';
 import { useSelectedDate } from '@/store/date';
-import { NewEvent } from '@/types/appwrite';
+import { NewEventFormData } from '@/types/appwrite';
 import { formatDateToYearMonthDay, formatShortDate } from '@/utilities/date';
 
 function isValidTimeFormat(time: string) {
@@ -22,16 +21,13 @@ function addOneHour(time: string) {
 }
 
 export function AddEventMobileInput() {
-	const { user } = useAuth();
 	const selectedDate = useSelectedDate();
 	const [eventName, setEventName] = useState('');
 	const [enteredHour, setEnteredHour] = useState('');
 	const { mutateAsync: addNewEvent } = useAddNewEvent();
 
 	const addEventInputSubmitHandler = async () => {
-		const newEvent: NewEvent = {
-			accountId: user?.accountId,
-			user: user?.$id,
+		const newEvent: NewEventFormData = {
 			title: eventName,
 			description: null,
 			isAllDay: enteredHour ? false : true,

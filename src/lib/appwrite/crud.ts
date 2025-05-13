@@ -2,7 +2,7 @@ import { ID, Query } from 'appwrite';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek } from 'date-fns';
 
 import { account, config, databases, storage } from '@/lib/appwrite';
-import { Event, NewEvent, NewEventForm, NewUser, User } from '@/types/appwrite';
+import { Event, NewEventFormData, NewUser, User } from '@/types/appwrite';
 
 export async function setAvatarImage(file: File, user: User) {
 	const bucketFile = await storage.createFile(config.storageId, ID.unique(), file);
@@ -55,11 +55,7 @@ export async function getEvents(date: Date) {
 	return events.documents as Event[];
 }
 
-export async function addNewEvent(event: NewEvent, user: User | null) {
-	if (!user) {
-		throw new Error('Not found user');
-	}
-
+export async function addNewEvent(event: NewEventFormData, user: User) {
 	const newEvent = {
 		...event,
 		startDate: startOfDay(event.startDate).toISOString(),
@@ -77,7 +73,7 @@ export async function addNewEvent(event: NewEvent, user: User | null) {
 	);
 }
 
-export async function updateEvent(eventId: string, updatedEvent: Partial<NewEventForm>) {
+export async function updateEvent(eventId: string, updatedEvent: Partial<NewEventFormData>) {
 	const editedEvent = {
 		...updatedEvent,
 		...(updatedEvent.startDate && { startDate: startOfDay(updatedEvent.startDate).toISOString() }),

@@ -40,16 +40,16 @@ import { toaster } from '@/components/ui/toaster';
 import { useAddNewEvent, useEditEvent } from '@/hooks/appwrite';
 import { NewEventSchema } from '@/schemas/new-event.schema';
 import { useSelectedDate } from '@/store/date';
-import { Event, NewEventForm } from '@/types/appwrite';
+import { Event, NewEventFormData } from '@/types/appwrite';
 import { addHoursAndResetMinutes, formatDateToYearMonthDay } from '@/utilities/date';
 
 export type DirtyField = {
-	[K in keyof NewEventForm]: K extends 'repeat' ? boolean[] : boolean;
+	[K in keyof NewEventFormData]: K extends 'repeat' ? boolean[] : boolean;
 };
 
 export type DirtyFields = Partial<DirtyField>;
 
-export type NewEventFieldNames = keyof NewEventForm;
+export type NewEventFieldNames = keyof NewEventFormData;
 
 const repeatFrequencyCollection = createListCollection({
 	items: [
@@ -66,11 +66,14 @@ const calculateEndTime = (time: string) => {
 	return `${newHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 };
 
-const getEditedFields = (dirtyFields: DirtyFields, getValuesFn: UseFormGetValues<NewEventForm>) => {
+const getEditedFields = (
+	dirtyFields: DirtyFields,
+	getValuesFn: UseFormGetValues<NewEventFormData>,
+) => {
 	return Object.keys(dirtyFields).reduce((acc, currentValue) => {
-		const field = currentValue as keyof NewEventForm;
+		const field = currentValue as keyof NewEventFormData;
 		return { ...acc, [currentValue]: getValuesFn(field) };
-	}, {} as Partial<NewEventForm>);
+	}, {} as Partial<NewEventFormData>);
 };
 
 type NewEventModalProps = {
@@ -95,7 +98,7 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 		setValue,
 		reset,
 		formState: { errors, dirtyFields, isSubmitting },
-	} = useForm<NewEventForm>({
+	} = useForm<NewEventFormData>({
 		resolver: zodResolver(NewEventSchema),
 		defaultValues: {
 			title: editedEvent ? editedEvent.title : '',
@@ -189,7 +192,7 @@ export function NewEventModal({ dialogTriggerComponent, editedEvent }: NewEventM
 		}
 	};
 
-	const submitHandler = async (event: NewEventForm) => {
+	const submitHandler = async (event: NewEventFormData) => {
 		onClose();
 		try {
 			await addNewEvent(event);

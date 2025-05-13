@@ -23,14 +23,10 @@ export type NewAccount = {
 	username: string;
 };
 
-export type ISignInAccount = {
+export type SignInAccount = {
 	email: string;
 	password: string;
 };
-
-export type NewEventForm = z.infer<typeof NewEventSchema>;
-
-export type NewEvent = z.infer<typeof NewEventSchema> & { user?: string; accountId?: string };
 
 export type Event = Models.Document & {
 	accountId: string;
@@ -45,3 +41,5 @@ export type Event = Models.Document & {
 	startTime: string;
 	endTime: string;
 };
+
+export type NewEventFormData = z.infer<typeof NewEventSchema>;

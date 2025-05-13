@@ -2,7 +2,7 @@ import { ID, Query } from 'appwrite';
 
 import { account, config, databases } from '@/lib/appwrite';
 import { saveNewUser } from '@/lib/appwrite/crud';
-import { ISignInAccount, NewAccount, User } from '@/types/appwrite';
+import { NewAccount, SignInAccount, User } from '@/types/appwrite';
 
 export async function updateVerification(userId: string, token: string) {
 	await account.updateVerification(userId, token);
@@ -28,6 +28,14 @@ export async function createAccount(user: NewAccount) {
 	return newUser as User;
 }
 
+export async function signInAccount(user: SignInAccount) {
+	await account.createEmailPasswordSession(user.email, user.password);
+}
+
+export async function signOutAccount() {
+	await account.deleteSession('current');
+}
+
 export async function updateUsername(user: User, username: string) {
 	await databases.updateDocument(config.databaseId, config.usersCollectionId, user.$id, {
 		name: username,
@@ -47,14 +55,6 @@ export async function updateEmail(newEmail: string, password: string) {
 		email: newEmail,
 	});
 	await verifyEmail();
-}
-
-export async function signInAccount(user: ISignInAccount) {
-	await account.createEmailPasswordSession(user.email, user.password);
-}
-
-export async function signOutAccount() {
-	await account.deleteSession('current');
 }
 
 export async function getCurrentUser() {
