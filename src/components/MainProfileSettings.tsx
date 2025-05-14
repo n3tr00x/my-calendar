@@ -4,8 +4,8 @@ import {
 	Avatar,
 	Box,
 	FileUploadFileChangeDetails as FileChangeDetails,
-	FileUploadRoot,
-	FileUploadTrigger,
+	// FileUploadRoot,
+	// FileUploadTrigger,
 	Flex,
 	Heading,
 	HStack,
@@ -17,6 +17,7 @@ import { ArrowUpFromLine, LogOut } from 'lucide-react';
 
 import { LogoutAlertDialog } from '@/components/LogoutAlertDialog';
 import { Button } from '@/components/ui/button';
+import { FileUploadRoot, FileUploadTrigger } from '@/components/ui/file-upload';
 import { toaster } from '@/components/ui/toaster';
 import { useSetAvatar } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
