@@ -95,7 +95,7 @@ export function AuthLayout() {
 						))}
 					</Carousel>
 				</Box>
-				<Flex w={{ base: 'full', md: '50%' }} minH="inherit" direction="column" justify="center">
+				<Flex w={{ base: 'full', md: '50%' }} direction="column" justify="center">
 					<Outlet />
 				</Flex>
 			</HStack>

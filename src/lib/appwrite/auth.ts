@@ -57,6 +57,15 @@ export async function updateEmail(newEmail: string, password: string) {
 	await verifyEmail();
 }
 
+export async function requestPasswordReset(email: string) {
+	const redirectUrl = `${window.location.origin}/reset-password`;
+	await account.createRecovery(email, redirectUrl);
+}
+
+export async function confirmPasswordReset(userId: string, secret: string, newPassword: string) {
+	await account.updateRecovery(userId, secret, newPassword);
+}
+
 export async function getCurrentUser() {
 	const currentAccount = await account.get();
 

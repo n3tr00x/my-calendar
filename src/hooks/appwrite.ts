@@ -8,7 +8,9 @@ import {
 } from '@/constants/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 import {
+	confirmPasswordReset,
 	createAccount,
+	requestPasswordReset,
 	signInAccount,
 	signOutAccount,
 	updateEmail,
@@ -23,7 +25,13 @@ import {
 	setAvatarImage,
 	updateEvent,
 } from '@/lib/appwrite/crud';
-import { Event, NewAccount, NewEventFormData, SignInAccount } from '@/types/appwrite';
+import {
+	Event,
+	NewAccount,
+	NewEventFormData,
+	ResetPasswordParams,
+	SignInAccount,
+} from '@/types/appwrite';
 import { generateEventsQueryKey } from '@/utilities/appwrite';
 import { removeDuplicates } from '@/utilities/helpers';
 
@@ -80,6 +88,19 @@ export function useUpdateEmail() {
 	return useMutation({
 		mutationFn: ({ email, password }: { email: string; password: string }) =>
 			updateEmail(email, password),
+	});
+}
+
+export function useRequestPasswordReset() {
+	return useMutation({
+		mutationFn: (email: string) => requestPasswordReset(email),
+	});
+}
+
+export function useResetPassword() {
+	return useMutation({
+		mutationFn: ({ userId, secret, password }: ResetPasswordParams) =>
+			confirmPasswordReset(userId, secret, password),
 	});
 }
 

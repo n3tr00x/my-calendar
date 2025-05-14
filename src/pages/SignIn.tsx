@@ -83,6 +83,11 @@ export function SignInPage() {
 							required
 							invalid={!!errors.password}
 							errorText={errors.password?.message}
+							helperText={
+								<ChakraLink color="blue.solid" asChild>
+									<Link to="/forgot-password">Forgot your password?</Link>
+								</ChakraLink>
+							}
 						>
 							<Input {...register('password')} type="password" />
 						</Field>
