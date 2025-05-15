@@ -4,6 +4,8 @@
 
 🔗 [Live Demo](https://my-calendar-pi.vercel.app)
 
+> ⚠️ **Note**: The application is currently optimized for **mobile devices only**. Desktop support is planned in future updates.
+
 ## ✨ Features
 
 - Responsive and user-friendly interface
@@ -27,6 +29,8 @@
 | [![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)                            | Hosting platform        |
 
 ## 🚀 Getting Started
+
+> ⚠️ This app is currently designed for mobile browsers. Desktop layout is **not fully supported yet**.
 
 To run the project locally:
 
