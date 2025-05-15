@@ -12,7 +12,9 @@ import App from './App';
 import { system } from './theme';
 
 const root = document.getElementById('root')!;
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+	defaultOptions: { queries: { refetchOnWindowFocus: false } },
+});
 
 createRoot(root).render(
 	<StrictMode>

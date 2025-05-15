@@ -1,7 +1,6 @@
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 import { AppwriteException } from 'appwrite';
 
-import { toaster } from '@/components/ui/toaster';
 import { getCurrentUser } from '@/lib/appwrite/auth';
 import type { User } from '@/types/appwrite';
 import { isAuthPage } from '@/utilities/helpers';
@@ -10,7 +9,6 @@ type IAuthContext = {
 	isAuthenticated: boolean;
 	isLoading: boolean;
 	checkUserAuthStatus: () => Promise<void>;
-	refetchCurrentUser: () => Promise<void>;
 	removeAuthentication: () => void;
 	user: User | null;
 };
@@ -20,7 +18,6 @@ const INITIAL_AUTH_CONTEXT_STATE = {
 	isLoading: false,
 	checkUserAuthStatus: async () => {},
 	removeAuthentication: () => {},
-	refetchCurrentUser: async () => {},
 	user: null,
 };
 
@@ -35,18 +32,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	console.log({ user, isLoading, isAuthenticated });
 
 	const checkUserAuthStatus = async () => {
-		setIsLoading(true);
-
 		try {
 			const currentAccount = await getCurrentUser();
 			setIsAuthenticated(true);
 			setUser(currentAccount);
 		} catch (error) {
-			if (
-				error instanceof AppwriteException &&
-				error.type === 'general_unauthorized_scope' &&
-				isAuthPage()
-			) {
+			if (error instanceof AppwriteException && error.code === 401 && isAuthPage()) {
 				return;
 			}
 
@@ -55,33 +46,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			throw error;
 		} finally {
 			setIsLoading(false);
-		}
-	};
-
-	const refetchCurrentUser = async () => {
-		try {
-			if (!user) {
-				throw new Error('Not authorized');
-			}
-
-			const currentAccount = await getCurrentUser();
-			setUser(currentAccount);
-		} catch (error) {
-			if (
-				error instanceof AppwriteException &&
-				window.location.pathname !== '/sign-in' &&
-				window.location.pathname !== '/sign-up'
-			) {
-				const code = error.code;
-
-				toaster.create({
-					title: `Account unauthorized. Code ${code}`,
-					type: 'error',
-					duration: 4000,
-				});
-			}
-
-			setUser(null);
 		}
 	};
 
@@ -102,7 +66,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 				user,
 				checkUserAuthStatus,
 				removeAuthentication,
-				refetchCurrentUser,
 			}}
 		>
 			{children}

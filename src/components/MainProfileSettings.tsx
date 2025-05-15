@@ -23,14 +23,14 @@ import { useSetAvatar } from '@/hooks/appwrite';
 import { useAuth } from '@/hooks/useAuth';
 
 export function MainProfileSettings() {
-	const { user, refetchCurrentUser } = useAuth();
+	const { user, checkUserAuthStatus } = useAuth();
 	const { mutateAsync: setNewAvatar } = useSetAvatar();
 	const [file, setFile] = useState<File | null>(null);
 	const [isActionBarOpen, setIsActionBarOpen] = useState(false);
 
 	const updateAvatarImage = async (file: File) => {
 		await setNewAvatar(file);
-		await refetchCurrentUser();
+		await checkUserAuthStatus();
 	};
 
 	const chooseImageHandler = (details: FileChangeDetails) => {

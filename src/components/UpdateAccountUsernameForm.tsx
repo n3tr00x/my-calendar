@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { updateUsernameSchema } from '@/schemas/account-settings.schema';
 
 export function UpdateUsernameAccountForm() {
-	const { user, refetchCurrentUser } = useAuth();
+	const { user, checkUserAuthStatus } = useAuth();
 	const { mutateAsync: updateUsername } = useUpdateUsername();
 	const {
 		register,
@@ -33,7 +33,7 @@ export function UpdateUsernameAccountForm() {
 			loading: { title: 'Updating your password...' },
 		});
 
-		await refetchCurrentUser();
+		await checkUserAuthStatus();
 	};
 
 	return (
