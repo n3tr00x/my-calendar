@@ -1,9 +1,10 @@
-import { ReactElement, RefAttributes, useState } from 'react';
-import { Box, ButtonProps, Input, Spinner, Stack, Text } from '@chakra-ui/react';
+import { useState } from 'react';
+import { Box, Input, Spinner, Stack, Text } from '@chakra-ui/react';
 import { isSameDay } from 'date-fns';
 import { Search } from 'lucide-react';
 
 import { SavedEvent } from '@/components/SavedEvent';
+import { Button } from '@/components/ui/button';
 import { InputGroup } from '@/components/ui/input-group';
 import {
 	PopoverArrow,
@@ -17,19 +18,24 @@ import useDebounce from '@/hooks/useDebounce';
 import { useUpdateSelectedDate } from '@/store/date';
 import { formatDateToYearMonthDay } from '@/utilities/date';
 
-type EventSearchPopoverProps = {
-	popoverTriggerComponent: ReactElement<ButtonProps & RefAttributes<HTMLButtonElement>>;
-};
-
-export function EventSearchPopover({ popoverTriggerComponent }: EventSearchPopoverProps) {
+export function EventSearchMobilePopover() {
 	const updateSelectedDate = useUpdateSelectedDate();
 	const [searchTerm, setSearchTerm] = useState('');
 	const debouncedEventTitleValue = useDebounce(searchTerm, 500);
 	const { data: events, isLoading } = useSearchedEvents(debouncedEventTitleValue);
 
 	return (
-		<PopoverRoot>
-			<PopoverTrigger asChild>{popoverTriggerComponent}</PopoverTrigger>
+		<PopoverRoot unmountOnExit lazyMount>
+			<PopoverTrigger display={{ lg: 'none' }} asChild>
+				<Button
+					variant="ghost"
+					display={{ lg: 'none' }}
+					size={{ base: 'xs', lg: 'md' }}
+					aspectRatio="square"
+				>
+					<Search />
+				</Button>
+			</PopoverTrigger>
 			<PopoverContent zIndex={99}>
 				<PopoverArrow />
 				<PopoverBody>
