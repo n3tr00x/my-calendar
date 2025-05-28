@@ -1,4 +1,4 @@
-import { chakra, GridItem } from '@chakra-ui/react';
+import { chakra, GridItem, useBreakpointValue } from '@chakra-ui/react';
 import { UseQueryResult } from '@tanstack/react-query';
 import { getDate, isSameDay, isSameMonth, isSunday, isToday, setHours } from 'date-fns';
 
@@ -17,13 +17,17 @@ type CalendarDayCellProps = {
 export function CalendarDayCell({ date, query }: CalendarDayCellProps) {
 	const { data: events = [], isLoading } = query;
 
+	const isDesktop = useBreakpointValue({ base: false, lg: true }, { ssr: false });
 	const { onEventFormOpen } = useModal();
 	const selectedDate = useSelectedDate();
 	const updateSelectedDate = useUpdateSelectedDate();
 
 	const dataChangeHandler = () => {
+		if (isDesktop) {
+			onEventFormOpen();
+		}
+
 		updateSelectedDate(setHours(date, new Date().getHours()));
-		onEventFormOpen();
 	};
 
 	return (
@@ -35,6 +39,7 @@ export function CalendarDayCell({ date, query }: CalendarDayCellProps) {
 			textAlign="center"
 			fontSize="xs"
 			overflow="hidden"
+			_active={{ cursor: 'grabbing' }}
 			onClick={dataChangeHandler}
 		>
 			<chakra.h2 fontWeight="semibold" opacity={isSameMonth(date, selectedDate) ? 1 : 0.4} my={2}>
