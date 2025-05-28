@@ -35,8 +35,8 @@ export async function saveNewUser(user: NewUser) {
 }
 
 export async function getEvents(date: Date) {
-	const minDate = startOfWeek(startOfMonth(date));
-	const maxDate = endOfWeek(endOfMonth(date));
+	const minDate = startOfWeek(startOfMonth(date), { weekStartsOn: 1 });
+	const maxDate = endOfWeek(endOfMonth(date), { weekStartsOn: 1 });
 
 	const currentAccount = await account.get();
 
