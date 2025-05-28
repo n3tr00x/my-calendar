@@ -4,6 +4,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
+import { NewEventModal } from '@/components/NewEvent';
 import { ColorModeProvider } from '@/components/ui/color-mode';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -25,6 +26,7 @@ createRoot(root).render(
 					<AuthProvider>
 						<App />
 						<Toaster />
+						<NewEventModal />
 					</AuthProvider>
 				</ColorModeProvider>
 			</ChakraProvider>

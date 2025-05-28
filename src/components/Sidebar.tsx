@@ -4,7 +4,6 @@ import { LogOut, Menu, Plus, Search } from 'lucide-react';
 
 import logo from '@/assets/logo.png';
 import { LogoutAlertDialog } from '@/components/LogoutAlertDialog';
-import { NewEventModal } from '@/components/NewEvent';
 import { Button } from '@/components/ui/button';
 import { ColorModeButton } from '@/components/ui/color-mode';
 import {
@@ -18,15 +17,17 @@ import {
 	DrawerTrigger,
 } from '@/components/ui/drawer';
 import { useAuth } from '@/hooks/useAuth';
+import { useModal } from '@/store/modal';
 
 export function Sidebar() {
 	const { user } = useAuth();
+	const { onEventFormOpen } = useModal();
 
 	return (
 		<DrawerRoot placement="start">
 			<DrawerBackdrop />
 			<DrawerTrigger asChild>
-				<Button size="xs" variant="ghost">
+				<Button size={{ base: 'xs', lg: 'md' }} variant="ghost">
 					<Menu />
 				</Button>
 			</DrawerTrigger>
@@ -39,13 +40,15 @@ export function Sidebar() {
 					</Flex>
 				</DrawerHeader>
 				<DrawerBody display="flex" flexDirection="column" gap={4}>
-					<NewEventModal
-						dialogTriggerComponent={
-							<Button variant="outline" colorPalette="blue" w="full" justifyContent="flex-start">
-								<Plus /> Add event
-							</Button>
-						}
-					/>
+					<Button
+						variant="outline"
+						colorPalette="blue"
+						w="full"
+						justifyContent="flex-start"
+						onClick={() => onEventFormOpen()}
+					>
+						<Plus /> Add event
+					</Button>
 					<Button variant="outline" colorPalette="blue" w="full" justifyContent="flex-start">
 						<Search /> Search events
 					</Button>

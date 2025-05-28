@@ -1,4 +1,4 @@
-import { RefAttributes } from 'react';
+import { MouseEvent, RefAttributes } from 'react';
 import { Box, Button, Flex, FlexProps, Highlight, Text } from '@chakra-ui/react';
 import { AppwriteException } from 'appwrite';
 import { CalendarRange, Edit, Trash } from 'lucide-react';
@@ -8,6 +8,7 @@ import { NewEventModal } from '@/components/NewEvent';
 import { toaster } from '@/components/ui/toaster';
 import { useRemoveEvent } from '@/hooks/appwrite';
 import { Event } from '@/types/appwrite';
+import { useModal } from '@/store/modal';
 
 type SavedEventProps = {
 	event: Event;
@@ -16,10 +17,11 @@ type SavedEventProps = {
 
 export function SavedEvent({ event, savedEventStyles }: SavedEventProps) {
 	console.log('<SavedEvent /> render.');
+	const { onEventFormOpen } = useModal();
 	const { mutateAsync: removeEvent } = useRemoveEvent();
 
 	const removeEventHandler = () => {
-		toaster.promise(removeEvent(event.$id), {
+		toaster.promise(removeEvent(editedEvent.$id), {
 			success: { title: 'The event has been removed!' },
 			error: error => ({
 				title: 'Something went wrong',
@@ -27,6 +29,12 @@ export function SavedEvent({ event, savedEventStyles }: SavedEventProps) {
 			}),
 			loading: { title: 'Removing event...' },
 		});
+	};
+
+	const editEventHandler = (e: MouseEvent) => {
+		e.stopPropagation();
+
+		onEventFormOpen(event);
 	};
 
 	return (
@@ -50,14 +58,17 @@ export function SavedEvent({ event, savedEventStyles }: SavedEventProps) {
 				</Text>
 			</Box>
 			<Flex ml="auto">
-				<NewEventModal
+				{/* <NewEventModal
 					editedEvent={event}
-					dialogTriggerComponent={
+					trigger={
 						<Button variant="ghost" ml="auto" size="sm" onClick={event => event.stopPropagation()}>
 							<Edit />
 						</Button>
 					}
-				/>
+				/> */}
+				<Button variant="ghost" ml="auto" size="sm" onClick={editEventHandler}>
+					<Edit />
+				</Button>
 				<AlertDialog
 					trigger={
 						<Button variant="ghost" ml="auto" size="sm" onClick={event => event.stopPropagation()}>

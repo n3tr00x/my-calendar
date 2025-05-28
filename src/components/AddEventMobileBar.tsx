@@ -1,10 +1,12 @@
 import { Flex } from '@chakra-ui/react';
 
 import { AddEventMobileInput } from '@/components/AddEventMobileInput';
-import { NewEventModal } from '@/components/NewEvent';
 import { AddEventMobileButton } from '@/components/ui/add-event-mobile-button';
+import { useModal } from '@/store/modal';
 
 export function AddEventMobileBar() {
+	const { onEventFormOpen } = useModal();
+
 	return (
 		<Flex
 			display={{ base: 'flex', lg: 'none' }}
@@ -15,7 +17,7 @@ export function AddEventMobileBar() {
 			marginTop="auto"
 		>
 			<AddEventMobileInput />
-			<NewEventModal trigger={<AddEventMobileButton />} />
+			<AddEventMobileButton onClick={() => onEventFormOpen()} />
 		</Flex>
 	);
 }

@@ -38,9 +38,17 @@ export function AlertDialog({
 				<DialogBody>{description}</DialogBody>
 				<DialogFooter>
 					<DialogActionTrigger asChild>
-						<Button variant="outline">Cancel</Button>
+						<Button variant="outline" onClick={event => event.stopPropagation()}>
+							Cancel
+						</Button>
 					</DialogActionTrigger>
-					<Button colorPalette="red" onClick={action}>
+					<Button
+						colorPalette="red"
+						onClick={event => {
+							event.stopPropagation();
+							action();
+						}}
+					>
 						{actionButtonLabel}
 					</Button>
 				</DialogFooter>
