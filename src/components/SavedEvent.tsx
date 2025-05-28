@@ -4,11 +4,10 @@ import { AppwriteException } from 'appwrite';
 import { CalendarRange, Edit, Trash } from 'lucide-react';
 
 import { AlertDialog } from '@/components/AlertDialog';
-import { NewEventModal } from '@/components/NewEvent';
 import { toaster } from '@/components/ui/toaster';
 import { useRemoveEvent } from '@/hooks/appwrite';
-import { Event } from '@/types/appwrite';
 import { useModal } from '@/store/modal';
+import { Event } from '@/types/appwrite';
 
 type SavedEventProps = {
 	event: Event;
@@ -21,7 +20,7 @@ export function SavedEvent({ event, savedEventStyles }: SavedEventProps) {
 	const { mutateAsync: removeEvent } = useRemoveEvent();
 
 	const removeEventHandler = () => {
-		toaster.promise(removeEvent(editedEvent.$id), {
+		toaster.promise(removeEvent(event.$id), {
 			success: { title: 'The event has been removed!' },
 			error: error => ({
 				title: 'Something went wrong',

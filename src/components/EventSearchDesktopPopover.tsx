@@ -41,7 +41,6 @@ export function EventSearchDesktopPopover() {
 			positioning={{ sameWidth: true }}
 			autoFocus={false}
 			lazyMount
-			unmountOnExit
 			closeOnInteractOutside
 		>
 			<PopoverTrigger display={{ base: 'none', lg: 'block' }} asChild>
@@ -73,8 +72,7 @@ export function EventSearchDesktopPopover() {
 									<Box
 										key={event.$id}
 										cursor="pointer"
-										onClick={e => {
-											e.stopPropagation();
+										onClick={() => {
 											updateSelectedDate(new Date(event.startDate));
 										}}
 									>
