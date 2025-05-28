@@ -24,7 +24,6 @@ export function LogoutAlertDialog({ trigger }: LogoutAlertDialogProps) {
 		toaster.create({
 			title: 'You have been logged out successfully.',
 			type: 'success',
-			placement: 'bottom-end',
 			duration: 4000,
 		});
 	};
