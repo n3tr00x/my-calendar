@@ -31,8 +31,13 @@ export function Calendar() {
 	};
 
 	return (
-		<Box as="section" id="calendar">
-			<Swiper initialSlide={1} onSlideChange={slideChangeHandler} spaceBetween={24}>
+		<Box as="section" id="calendar" height={{ lg: 'full' }}>
+			<Swiper
+				initialSlide={1}
+				onSlideChange={slideChangeHandler}
+				spaceBetween={24}
+				style={{ height: 'inherit' }}
+			>
 				{visibleMonths.map(month => (
 					<SwiperSlide key={month.getTime()}>
 						<Sheet selectedDate={month} eventsQuery={eventsQuery} />

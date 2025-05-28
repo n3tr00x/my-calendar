@@ -29,3 +29,7 @@ export const formatShortDate = (date: Date) => {
 export const formatDateToMonthYear = (date: Date) => {
 	return format(date, 'LLLL yyyy');
 };
+
+export const formatLongDate = (date: Date) => {
+	return format(date, 'EEEE, d MMMM');
+};
