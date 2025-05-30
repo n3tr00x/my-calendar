@@ -1,4 +1,4 @@
-import { Button, Flex, useDisclosure } from '@chakra-ui/react';
+import { Button, Flex } from '@chakra-ui/react';
 import { addMonths, format, startOfMonth, subMonths } from 'date-fns';
 
 import { ChevronLeftIcon } from '@/components/icons/ChevronLeftIcon';
@@ -10,7 +10,6 @@ export function MonthNavigator() {
 	console.log('<MonthNavigator /> render');
 	const selectedDate = useSelectedDate();
 	const updateSelectedDate = useUpdateSelectedDate();
-	const { open, onOpen, onClose } = useDisclosure();
 
 	const setPreviousMonth = () => {
 		const previousMonth = startOfMonth(subMonths(selectedDate, 1));
@@ -24,7 +23,6 @@ export function MonthNavigator() {
 
 	return (
 		<>
-			{open && <YearPickerModal isOpen={open} onClose={onClose} />}
 			<Flex justifyContent="space-between" gap={{ lg: 1 }}>
 				<Button
 					aria-label="previous month button"
@@ -35,15 +33,18 @@ export function MonthNavigator() {
 				>
 					<ChevronLeftIcon />
 				</Button>
-				<Button
-					textAlign="center"
-					size={{ base: 'xs', lg: 'sm' }}
-					colorPalette="blue"
-					variant="outline"
-					onClick={onOpen}
-				>
-					{format(selectedDate, 'MMM').toUpperCase()} {selectedDate.getFullYear()}
-				</Button>
+				<YearPickerModal
+					trigger={
+						<Button
+							textAlign="center"
+							size={{ base: 'xs', lg: 'sm' }}
+							colorPalette="blue"
+							variant="outline"
+						>
+							{format(selectedDate, 'MMM').toUpperCase()} {selectedDate.getFullYear()}
+						</Button>
+					}
+				/>
 				<Button
 					aria-label="next month button"
 					px={1}

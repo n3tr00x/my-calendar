@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, useState } from 'react';
-import { Grid, GridItem } from '@chakra-ui/react';
+import { Dispatch, ReactElement, RefAttributes, SetStateAction, useState } from 'react';
+import { ButtonProps, Grid, GridItem, useDisclosure } from '@chakra-ui/react';
 import { addYears, setMonth, setYear, subYears } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -11,23 +11,24 @@ import {
 	DialogContent,
 	DialogHeader,
 	DialogRoot,
+	DialogTrigger,
 } from '@/components/ui/dialog';
 import { MONTHS } from '@/constants/date';
 import { useSelectedDate, useUpdateSelectedDate } from '@/store/date';
 
 type YearPickerModalProps = {
-	isOpen: boolean;
-	onClose: () => void;
+	trigger: ReactElement<ButtonProps & RefAttributes<HTMLButtonElement>>;
 };
 
 const generateTwelveYears = (date: Date) => {
 	return Array.from({ length: 12 }, (_, index) => date.getFullYear() + index);
 };
 
-export function YearPickerModal({ isOpen, onClose }: YearPickerModalProps) {
+export function YearPickerModal({ trigger }: YearPickerModalProps) {
 	console.log('<YearPickerModal /> render.');
 
 	const currentSelectedDate = useSelectedDate();
+	const { open, setOpen, onClose } = useDisclosure();
 	const [mode, setMode] = useState<'month' | 'year'>('month');
 	const [date, setDate] = useState(currentSelectedDate);
 	const years = generateTwelveYears(date);
@@ -52,21 +53,22 @@ export function YearPickerModal({ isOpen, onClose }: YearPickerModalProps) {
 		}
 	};
 
-	const closePickerModal = () => {
+	const closePickerHandler = () => {
 		setMode('month');
 		setDate(currentSelectedDate);
-		onClose();
 	};
 
 	return (
 		<DialogRoot
-			open={isOpen}
-			onOpenChange={closePickerModal}
+			open={open}
+			onOpenChange={({ open }) => setOpen(open)}
+			onExitComplete={closePickerHandler}
 			size="sm"
 			motionPreset="slide-in-bottom"
 			placement="bottom"
 		>
 			<DialogBackdrop />
+			<DialogTrigger asChild>{trigger}</DialogTrigger>
 			<DialogContent mx={{ base: 2, sm: 0 }}>
 				<DialogHeader justifyContent="center">
 					<Button variant="ghost" onClick={setPreviousYear}>
