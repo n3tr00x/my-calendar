@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Avatar, Box, Flex, Image, Text } from '@chakra-ui/react';
-import { LogOut, Menu, Plus, Search } from 'lucide-react';
+import { Calendar1, LogOut, Menu, Plus, Settings } from 'lucide-react';
 
 import logo from '@/assets/logo.png';
 import { LogoutAlertDialog } from '@/components/LogoutAlertDialog';
@@ -16,6 +16,7 @@ import {
 	DrawerRoot,
 	DrawerTrigger,
 } from '@/components/ui/drawer';
+import { YearPickerModal } from '@/components/YearPicker';
 import { useAuth } from '@/hooks/useAuth';
 import { useModal } from '@/store/modal';
 
@@ -49,13 +50,30 @@ export function Sidebar() {
 					>
 						<Plus /> Add event
 					</Button>
-					<Button variant="outline" colorPalette="blue" w="full" justifyContent="flex-start">
-						<Search /> Search events
+					<YearPickerModal
+						trigger={
+							<Button variant="outline" colorPalette="blue" w="full" justifyContent="flex-start">
+								<Calendar1 /> Pick year
+							</Button>
+						}
+					/>
+					<Button
+						asChild
+						variant="outline"
+						colorPalette="blue"
+						w="full"
+						justifyContent="flex-start"
+					>
+						<Link to="/settings">
+							<Flex gap={2}>
+								<Settings /> Settings
+							</Flex>
+						</Link>
 					</Button>
 				</DrawerBody>
 				<DrawerFooter justifyContent="space-between">
 					<Box>
-						<Button variant="ghost" py={6}>
+						<Button asChild variant="ghost" py={6}>
 							<Link to="/settings">
 								<Flex gap={1}>
 									<Avatar.Root>
