@@ -2,6 +2,7 @@ import { MouseEvent } from 'react';
 import {
 	Box,
 	Button,
+	CloseButton,
 	Grid,
 	GridItem,
 	Popover,
@@ -12,12 +13,11 @@ import {
 import { getDay } from 'date-fns';
 import { Edit, ListMinus, MapPin, Trash } from 'lucide-react';
 
+import { CalendarEventBadge } from '@/components/CalendarEventBadge';
+import { DeleteEventAlertDialog } from '@/components/DeleteEventAlertDialog';
 import { useModal } from '@/store/modal';
 import { Event } from '@/types/appwrite';
 import { formatLongDate } from '@/utilities/date';
-
-import { CalendarEventBadge } from './CalendarEventBadge';
-import { DeleteEventAlertDialog } from './DeleteEventAlertDialog';
 
 type EventPopoverProps = { event: Event; date: Date };
 
@@ -47,6 +47,11 @@ export function EventPopover({ event: editedEvent, date }: EventPopoverProps) {
 		onEventFormOpen(editedEvent);
 	};
 
+	const closePopoverHandler = (event: MouseEvent) => {
+		event.stopPropagation();
+		onClose();
+	};
+
 	return (
 		<Popover.Root
 			modal
@@ -62,26 +67,19 @@ export function EventPopover({ event: editedEvent, date }: EventPopoverProps) {
 			<Portal>
 				<Popover.Positioner>
 					<Popover.Content>
-						<Popover.Header ml="auto">
-							<Button variant="ghost" ml="auto" size="xs" onClick={editEventHandler}>
+						<Popover.Header ml="auto" display="flex" gap={1}>
+							<Button variant="ghost" size="md" px="0" ml="auto" onClick={editEventHandler}>
 								<Edit />
 							</Button>
 							<DeleteEventAlertDialog
 								trigger={
-									<Button
-										variant="ghost"
-										ml="auto"
-										size="xs"
-										onClick={event => {
-											event.stopPropagation();
-											onClose();
-										}}
-									>
+									<Button variant="ghost" size="md" px="0" ml="auto" onClick={closePopoverHandler}>
 										<Trash />
 									</Button>
 								}
 								event={editedEvent}
 							/>
+							<CloseButton size="md" onClick={closePopoverHandler} />
 						</Popover.Header>
 						<Popover.Body display="flex" flexDirection="column" gap={1}>
 							<Grid templateColumns="36px 1fr" gapY={2}>
