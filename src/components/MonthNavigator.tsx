@@ -27,6 +27,7 @@ export function MonthNavigator() {
 			{open && <YearPickerModal isOpen={open} onClose={onClose} />}
 			<Flex justifyContent="space-between" gap={{ lg: 1 }}>
 				<Button
+					aria-label="previous month button"
 					px={1}
 					onClick={setPreviousMonth}
 					size={{ base: 'xs', lg: 'sm' }}
@@ -44,6 +45,7 @@ export function MonthNavigator() {
 					{format(selectedDate, 'MMM').toUpperCase()} {selectedDate.getFullYear()}
 				</Button>
 				<Button
+					aria-label="next month button"
 					px={1}
 					onClick={setNextMonth}
 					size={{ base: 'xs', lg: 'sm' }}

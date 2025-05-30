@@ -28,9 +28,10 @@ export function EventSearchMobilePopover() {
 		<PopoverRoot unmountOnExit lazyMount>
 			<PopoverTrigger display={{ lg: 'none' }} asChild>
 				<Button
+					aria-label="search events button"
 					variant="ghost"
 					display={{ lg: 'none' }}
-					size={{ base: 'xs', lg: 'md' }}
+					size={{ base: 'xs' }}
 					aspectRatio="square"
 				>
 					<Search />

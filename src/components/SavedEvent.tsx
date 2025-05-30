@@ -57,20 +57,24 @@ export function SavedEvent({ event, savedEventStyles }: SavedEventProps) {
 				</Text>
 			</Box>
 			<Flex ml="auto">
-				{/* <NewEventModal
-					editedEvent={event}
-					trigger={
-						<Button variant="ghost" ml="auto" size="sm" onClick={event => event.stopPropagation()}>
-							<Edit />
-						</Button>
-					}
-				/> */}
-				<Button variant="ghost" ml="auto" size="sm" onClick={editEventHandler}>
+				<Button
+					aria-label="edit event button"
+					variant="ghost"
+					ml="auto"
+					size="sm"
+					onClick={editEventHandler}
+				>
 					<Edit />
 				</Button>
 				<AlertDialog
 					trigger={
-						<Button variant="ghost" ml="auto" size="sm" onClick={event => event.stopPropagation()}>
+						<Button
+							aria-label="remove event button"
+							variant="ghost"
+							ml="auto"
+							size="sm"
+							onClick={event => event.stopPropagation()}
+						>
 							<Trash />
 						</Button>
 					}

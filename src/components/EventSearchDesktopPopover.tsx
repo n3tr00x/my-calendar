@@ -38,7 +38,7 @@ export function EventSearchDesktopPopover() {
 	return (
 		<PopoverRoot open={open} positioning={{ sameWidth: true }} autoFocus={false} lazyMount>
 			<PopoverTrigger display={{ base: 'none', lg: 'block' }} asChild>
-				<InputGroup flex="1" startElement={<Search size="1em" />}>
+				<InputGroup flex="1" startElement={<Search size="1em" />} role="button">
 					<Input
 						w={96}
 						placeholder="Search events"

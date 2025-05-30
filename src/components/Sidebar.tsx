@@ -27,7 +27,7 @@ export function Sidebar() {
 		<DrawerRoot placement="start">
 			<DrawerBackdrop />
 			<DrawerTrigger asChild>
-				<Button size={{ base: 'xs', lg: 'md' }} variant="ghost">
+				<Button aria-label="Open navigation drawer" size={{ base: 'xs', lg: 'md' }} variant="ghost">
 					<Menu />
 				</Button>
 			</DrawerTrigger>
