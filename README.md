@@ -2,6 +2,11 @@
 
 **My Calendar** is a modern, interactive calendar application built with React, TypeScript, and Appwrite. It offers a clean UI, multiple calendar views, and full event management functionality.
 
+> 🧪 **Test Credentials**  
+> You can log in and test the app using the following demo account:  
+> **Email**: `test@test.com`  
+> **Password**: `test12345`
+
 🔗 [Live Demo](https://my-calendar-pi.vercel.app)
 
 > ⚠️ **Note**: The application is currently optimized for **mobile devices only**. Desktop support is planned in future updates.
